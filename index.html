@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>BankPlay TPV - Contactless & Ticket</title>
+    <title>BankPlay TPV - Menú Completo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         html, body { 
@@ -19,8 +19,14 @@
         .product-card {
             background: #1e293b;
             border: 1px solid #334155;
-            border-radius: 1.25rem;
+            border-radius: 1rem;
             transition: transform 0.1s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            min-height: 80px;
         }
         .product-card:active { transform: scale(0.95); background: #334155; }
         
@@ -57,7 +63,6 @@
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
-        /* Estilo del Ticket de Caja */
         .receipt-paper {
             background: #ffffff;
             color: #1a1a1a;
@@ -90,64 +95,97 @@
         <header class="flex justify-between items-center mb-4">
             <div>
                 <h1 class="text-xl font-black italic text-blue-500 tracking-tighter uppercase">BankPlay</h1>
-                <p class="text-[8px] text-slate-500 font-bold uppercase tracking-widest">Terminal de Cobro</p>
+                <p class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Restaurante & Café</p>
             </div>
-            <button onclick="resetCart()" class="text-[9px] font-bold bg-slate-800 px-3 py-2 rounded-full text-slate-400 active:bg-red-900/40">BORRAR TODO</button>
+            <button onclick="resetCart()" class="text-[9px] font-bold bg-slate-800 px-3 py-2 rounded-full text-slate-400 active:bg-red-900/40">LIMPIAR TODO</button>
         </header>
 
         <!-- Listado de Productos -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 flex-[2] overflow-y-auto custom-scroll pb-6 pr-1">
+        <div class="grid grid-cols-3 gap-2 flex-[3] overflow-y-auto custom-scroll pb-6 pr-1">
             
             <!-- COMIDA -->
-            <button onclick="add('Hamburguesa', 6.50)" class="product-card p-3 flex flex-col items-center">
-                <span class="text-2xl mb-1">🍔</span>
-                <span class="text-[9px] font-bold uppercase text-slate-400">Hamburguesa</span>
-                <span class="text-base font-black text-blue-400">6,50€</span>
+            <button onclick="add('Hamburguesa', 6.50)" class="product-card border-orange-500/20">
+                <span class="text-xl mb-1">🍔</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Hamburguesa</span>
+                <span class="text-sm font-black text-blue-400">6,50€</span>
             </button>
-            <button onclick="add('Perrito', 4.80)" class="product-card p-3 flex flex-col items-center">
-                <span class="text-2xl mb-1">🌭</span>
-                <span class="text-[9px] font-bold uppercase text-slate-400">Perrito</span>
-                <span class="text-base font-black text-blue-400">4,80€</span>
+            <button onclick="add('Paella', 12.00)" class="product-card border-yellow-500/20">
+                <span class="text-xl mb-1">🥘</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Paella</span>
+                <span class="text-sm font-black text-blue-400">12,00€</span>
             </button>
-            <button onclick="add('Pulpo', 14.50)" class="product-card p-3 flex flex-col items-center border-orange-500/20">
-                <span class="text-2xl mb-1">🐙</span>
-                <span class="text-[9px] font-bold uppercase text-slate-400">Pulpo</span>
-                <span class="text-base font-black text-blue-400">14,50€</span>
+            <button onclick="add('Gambas', 9.50)" class="product-card border-orange-400/20">
+                <span class="text-xl mb-1">🦐</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Gambas</span>
+                <span class="text-sm font-black text-blue-400">9,50€</span>
             </button>
-            <button onclick="add('Papas Fritas', 3.00)" class="product-card p-3 flex flex-col items-center">
-                <span class="text-2xl mb-1">🍟</span>
-                <span class="text-[9px] font-bold uppercase text-slate-400">Papas Fritas</span>
-                <span class="text-base font-black text-blue-400">3,00€</span>
+            <button onclick="add('Huevo Frito', 4.50)" class="product-card border-yellow-300/20">
+                <span class="text-xl mb-1">🍳</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Huevo Frito</span>
+                <span class="text-sm font-black text-blue-400">4,50€</span>
             </button>
-            <button onclick="add('Pizza', 8.50)" class="product-card p-3 flex flex-col items-center">
-                <span class="text-2xl mb-1">🍕</span>
-                <span class="text-[9px] font-bold uppercase text-slate-400">Pizza</span>
-                <span class="text-base font-black text-blue-400">8,50€</span>
+            <button onclick="add('Pescado', 11.00)" class="product-card border-blue-300/20">
+                <span class="text-xl mb-1">🐟</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Pescado</span>
+                <span class="text-sm font-black text-blue-400">11,00€</span>
+            </button>
+            <button onclick="add('Pulpo', 14.50)" class="product-card border-purple-500/20">
+                <span class="text-xl mb-1">🐙</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Pulpo</span>
+                <span class="text-sm font-black text-blue-400">14,50€</span>
+            </button>
+            <button onclick="add('Chuletón', 22.00)" class="product-card border-red-500/20">
+                <span class="text-xl mb-1">🥩</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Chuletón</span>
+                <span class="text-sm font-black text-blue-400">22,00€</span>
+            </button>
+            <button onclick="add('Pizza', 8.50)" class="product-card border-red-400/20">
+                <span class="text-xl mb-1">🍕</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Pizza</span>
+                <span class="text-sm font-black text-blue-400">8,50€</span>
+            </button>
+            <button onclick="add('Papas Fritas', 3.00)" class="product-card border-yellow-600/20">
+                <span class="text-xl mb-1">🍟</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Papas</span>
+                <span class="text-sm font-black text-blue-400">3,00€</span>
             </button>
 
             <!-- BEBIDAS -->
-            <button onclick="add('Refresco', 2.20)" class="product-card p-3 flex flex-col items-center border-blue-500/20">
-                <span class="text-2xl mb-1">🥤</span>
-                <span class="text-[9px] font-bold uppercase text-slate-400">Refresco</span>
-                <span class="text-base font-black text-blue-400">2,20€</span>
+            <button onclick="add('Refresco', 2.20)" class="product-card border-blue-500/20">
+                <span class="text-xl mb-1">🥤</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Refresco</span>
+                <span class="text-sm font-black text-blue-400">2,20€</span>
             </button>
-            <button onclick="add('Cerveza', 2.50)" class="product-card p-3 flex flex-col items-center border-blue-500/20">
-                <span class="text-2xl mb-1">🍺</span>
-                <span class="text-[9px] font-bold uppercase text-slate-400">Cerveza</span>
-                <span class="text-base font-black text-blue-400">2,50€</span>
+            <button onclick="add('Cerveza', 2.50)" class="product-card border-amber-500/20">
+                <span class="text-xl mb-1">🍺</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Cerveza</span>
+                <span class="text-sm font-black text-blue-400">2,50€</span>
             </button>
-            <button onclick="add('Agua', 1.50)" class="product-card p-3 flex flex-col items-center border-blue-500/20">
-                <span class="text-2xl mb-1">💧</span>
-                <span class="text-[9px] font-bold uppercase text-slate-400">Agua</span>
-                <span class="text-base font-black text-blue-400">1,50€</span>
+            <button onclick="add('Leche', 1.80)" class="product-card border-white/20">
+                <span class="text-xl mb-1">🥛</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Leche</span>
+                <span class="text-sm font-black text-blue-400">1,80€</span>
+            </button>
+            <button onclick="add('Agua', 1.50)" class="product-card border-cyan-500/20">
+                <span class="text-xl mb-1">💧</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Agua</span>
+                <span class="text-sm font-black text-blue-400">1,50€</span>
+            </button>
+            <button onclick="add('Café', 1.20)" class="product-card border-amber-800/20">
+                <span class="text-xl mb-1">☕</span>
+                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Café</span>
+                <span class="text-sm font-black text-blue-400">1,20€</span>
             </button>
         </div>
 
-        <!-- VISOR DE PRODUCTOS AÑADIDOS -->
+        <!-- VISOR DE PRODUCTOS (EDICIÓN) -->
         <div id="cart-preview" class="flex-1 bg-slate-900/50 rounded-2xl p-3 my-2 border border-slate-800 overflow-y-auto custom-scroll">
-            <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2 border-b border-slate-800 pb-1">Lista de Cobro</p>
+            <div class="flex justify-between items-center mb-2 border-b border-slate-800 pb-1">
+                <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Resumen del Pedido</p>
+                <p class="text-[8px] font-black text-blue-500 uppercase">Pulsa ❌ para corregir</p>
+            </div>
             <div id="cart-list" class="space-y-1 text-[11px]">
-                <p class="text-slate-600 italic">No hay productos seleccionados...</p>
+                <p class="text-slate-600 italic text-center py-2">Selecciona productos...</p>
             </div>
         </div>
 
@@ -155,10 +193,10 @@
         <div class="bg-slate-900 p-6 -mx-4 border-t border-slate-800 rounded-t-[2rem]">
             <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Total Cuenta</p>
+                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Total a Pagar</p>
                     <p id="total-val" class="text-4xl font-black tabular-nums">0,00€</p>
                 </div>
-                <button id="pay-btn" onclick="goToPay()" disabled class="bg-blue-600 disabled:bg-slate-800 px-8 py-4 rounded-2xl font-black uppercase text-sm active:scale-95 shadow-lg shadow-blue-900/20">
+                <button id="pay-btn" onclick="goToPay()" disabled class="bg-blue-600 disabled:bg-slate-800 px-8 py-4 rounded-2xl font-black uppercase text-sm active:scale-95 shadow-lg shadow-blue-900/20 transition-colors">
                     COBRAR
                 </button>
             </div>
@@ -167,23 +205,21 @@
 
     <!-- PANTALLA DE PAGO -->
     <div id="view-pay" class="hidden flex-1 flex flex-col bg-slate-950 p-6 relative">
-        <div id="pay-interactive-zone" class="absolute inset-0 z-0" onpointerdown="processPayment()"></div>
+        <div id="pay-interactive-zone" class="absolute inset-0 z-0" onpointerdown="handleScreenTap()"></div>
         
-        <div class="flex justify-between items-center z-10 relative pointer-events-none">
+        <div id="pay-header" class="flex justify-between items-center z-10 relative pointer-events-none">
             <button onclick="cancelPay()" class="text-slate-600 font-bold text-xs uppercase italic pointer-events-auto">Cancelar</button>
             <div class="flex items-center gap-2 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
                 <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <span class="text-[8px] font-black text-blue-400 uppercase tracking-widest">Esperando Pago</span>
+                <span class="text-[8px] font-black text-blue-400 uppercase tracking-widest">Lector Activo</span>
             </div>
         </div>
 
         <div id="waiting-area" class="flex-1 flex flex-col items-center justify-center text-center z-10 relative pointer-events-none">
             <div class="absolute w-72 h-72 bg-blue-500 rounded-full blur-[90px] pulse-bg pointer-events-none opacity-20"></div>
-            
-            <p class="text-blue-500 text-xs font-black uppercase tracking-[0.4em] mb-4">Pago por contacto</p>
+            <p class="text-blue-500 text-xs font-black uppercase tracking-[0.4em] mb-4">Pago Contactless</p>
             <h2 id="pay-amt" class="text-7xl font-black italic mb-12 tracking-tighter text-white">0,00€</h2>
             
-            <!-- Icono Contactless Circular -->
             <div class="w-full flex items-center justify-center mb-8">
                 <div class="relative w-40 h-40 flex items-center justify-center border-4 border-blue-500/40 rounded-full">
                     <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-blue-500">
@@ -196,12 +232,10 @@
             </div>
             
             <p class="text-xl font-black italic uppercase text-white tracking-widest animate-pulse">Acerque su Tarjeta</p>
-            <p class="text-[9px] text-slate-500 mt-2 font-bold uppercase tracking-widest italic">O toque en cualquier parte</p>
         </div>
 
         <!-- ÉXITO Y TICKET -->
-        <div id="success-area" class="hidden flex-1 flex flex-col items-center justify-center z-20 relative pt-10">
-            <!-- Mensaje éxito -->
+        <div id="success-area" class="hidden flex-1 flex flex-col items-center justify-center z-20 relative pt-10 pointer-events-none">
             <div id="success-confirmation" class="text-center mb-6">
                 <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
@@ -211,47 +245,31 @@
                 <h3 class="text-3xl font-black italic uppercase">¡PAGO CORRECTO!</h3>
             </div>
 
-            <!-- Botón de Imprimir -->
-            <button id="print-btn" onclick="showTicket()" class="bg-white text-slate-900 px-8 py-4 rounded-2xl font-black uppercase text-sm shadow-xl flex items-center gap-3 active:scale-95 transition-all">
+            <button id="print-btn" onclick="showTicket(event)" class="bg-white text-slate-900 px-8 py-4 rounded-2xl font-black uppercase text-sm shadow-xl flex items-center gap-3 active:scale-95 transition-all pointer-events-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
                 Imprimir Ticket
             </button>
-
+            
             <!-- Ticket Visual -->
-            <div id="ticket-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6 backdrop-blur-sm" onclick="closeTicket()">
+            <div id="ticket-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6 backdrop-blur-sm pointer-events-auto" onclick="closeTicket()">
                 <div class="receipt-paper w-full max-w-xs p-8 rounded-sm text-[11px] animate-bounce-in" onclick="event.stopPropagation()">
                     <div class="text-center border-b border-slate-300 pb-4 mb-4">
                         <p class="font-black text-lg">BANKPLAY S.L.</p>
                         <p>C/ Comercio, 123</p>
-                        <p>NIF: B-12345678</p>
                         <p id="ticket-date" class="mt-2 opacity-70">--/--/-- --:--</p>
                     </div>
-                    
-                    <div id="ticket-items" class="space-y-1 mb-4">
-                        <!-- Items dinámicos -->
-                    </div>
-
+                    <div id="ticket-items" class="space-y-1 mb-4"></div>
                     <div class="border-t-2 border-slate-900 pt-3 flex justify-between font-black text-lg italic uppercase">
                         <span>TOTAL</span>
                         <span id="ticket-total">0,00€</span>
                     </div>
-                    
                     <div class="mt-6 text-center opacity-60">
                         <p>***** COPIA CLIENTE *****</p>
                         <p class="mt-2 font-bold italic uppercase">¡Gracias por su visita!</p>
-                        <div class="mt-4 flex justify-center opacity-30">
-                            <svg width="100" height="20" viewBox="0 0 100 20" fill="currentColor">
-                                <rect width="2" height="20" x="0"/> <rect width="4" height="20" x="5"/> <rect width="1" height="20" x="12"/>
-                                <rect width="6" height="20" x="16"/> <rect width="2" height="20" x="25"/> <rect width="4" height="20" x="30"/>
-                                <rect width="2" height="20" x="40"/> <rect width="8" height="20" x="45"/> <rect width="1" height="20" x="56"/>
-                                <rect width="4" height="20" x="60"/> <rect width="2" height="20" x="70"/> <rect width="6" height="20" x="75"/>
-                                <rect width="2" height="20" x="85"/> <rect width="4" height="20" x="90"/>
-                            </svg>
-                        </div>
                     </div>
-                    <button onclick="closeTicket()" class="mt-8 w-full bg-slate-100 py-3 font-bold uppercase tracking-widest text-[9px] rounded-lg">FINALIZAR</button>
+                    <button onclick="closeTicket()" class="mt-8 w-full bg-slate-100 py-3 font-bold uppercase tracking-widest text-[9px] rounded-lg active:bg-slate-200">FINALIZAR</button>
                 </div>
             </div>
         </div>
@@ -269,19 +287,28 @@
             if (navigator.vibrate) navigator.vibrate(10);
         }
 
+        function removeOne(name) {
+            const index = cart.findLastIndex(item => item.name === name);
+            if (index !== -1) {
+                total -= cart[index].price;
+                cart.splice(index, 1);
+                updateUI();
+                if (navigator.vibrate) navigator.vibrate(5);
+            }
+        }
+
         function updateUI() {
-            // Actualizar Total
+            if (total < 0) total = 0;
+            
             document.getElementById('total-val').innerText = total.toFixed(2).replace('.', ',') + '€';
             document.getElementById('pay-btn').disabled = cart.length === 0;
 
-            // Actualizar Visor de Productos
             const list = document.getElementById('cart-list');
             if (cart.length === 0) {
-                list.innerHTML = '<p class="text-slate-600 italic">No hay productos seleccionados...</p>';
+                list.innerHTML = '<p class="text-slate-600 italic text-center py-2">Selecciona productos...</p>';
                 return;
             }
 
-            // Agrupar para el visor
             const counts = {};
             cart.forEach(item => counts[item.name] = (counts[item.name] || 0) + 1);
             
@@ -291,13 +318,15 @@
                 const row = document.createElement('div');
                 row.className = 'flex justify-between items-center bg-slate-800/50 p-2 rounded-lg border border-slate-700/50';
                 row.innerHTML = `
-                    <span class="font-bold text-slate-300"><span class="text-blue-500">${counts[name]}x</span> ${name.toUpperCase()}</span>
+                    <div class="flex items-center gap-2">
+                        <button onclick="removeOne('${name}')" class="bg-red-500/20 text-red-500 w-5 h-5 rounded flex items-center justify-center text-[8px] border border-red-500/30 active:scale-90">❌</button>
+                        <span class="font-bold text-slate-300"><span class="text-blue-500">${counts[name]}x</span> ${name.toUpperCase()}</span>
+                    </div>
                     <span class="text-blue-400 font-black">${(itemData.price * counts[name]).toFixed(2)}€</span>
                 `;
                 list.appendChild(row);
             });
             
-            // Auto-scroll al final del visor
             const visor = document.getElementById('cart-preview');
             visor.scrollTop = visor.scrollHeight;
         }
@@ -313,6 +342,7 @@
             document.getElementById('view-menu').classList.add('hidden');
             document.getElementById('view-pay').classList.remove('hidden');
             document.getElementById('pay-amt').innerText = total.toFixed(2).replace('.', ',') + '€';
+            document.getElementById('pay-header').classList.remove('hidden');
         }
 
         function cancelPay() {
@@ -322,6 +352,15 @@
             document.getElementById('success-area').classList.add('hidden');
             document.getElementById('ticket-modal').classList.add('hidden');
             document.body.classList.remove('success-screen');
+            isPaid = false;
+        }
+
+        function handleScreenTap() {
+            if (!isPaid) {
+                processPayment();
+            } else {
+                closeTicket(); 
+            }
         }
 
         function processPayment() {
@@ -337,15 +376,17 @@
 
             if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
+            document.getElementById('pay-header').classList.add('hidden');
             document.getElementById('waiting-area').classList.add('hidden');
             document.getElementById('success-area').classList.remove('hidden');
             document.body.classList.add('success-screen');
         }
 
-        function showTicket() {
+        function showTicket(event) {
+            if (event) event.stopPropagation();
+            
             const list = document.getElementById('ticket-items');
             list.innerHTML = '';
-            
             const counts = {};
             cart.forEach(item => counts[item.name] = (counts[item.name] || 0) + 1);
             
@@ -353,18 +394,13 @@
                 const itemData = cart.find(i => i.name === name);
                 const row = document.createElement('div');
                 row.className = 'flex justify-between uppercase';
-                row.innerHTML = `
-                    <span>${counts[name]}x ${name}</span>
-                    <span>${(itemData.price * counts[name]).toFixed(2)}</span>
-                `;
+                row.innerHTML = `<span>${counts[name]}x ${name}</span><span>${(itemData.price * counts[name]).toFixed(2)}</span>`;
                 list.appendChild(row);
             });
 
             const now = new Date();
-            document.getElementById('ticket-date').innerText = 
-                `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            document.getElementById('ticket-date').innerText = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
             document.getElementById('ticket-total').innerText = total.toFixed(2).replace('.', ',') + '€';
-            
             document.getElementById('ticket-modal').classList.remove('hidden');
             document.getElementById('print-btn').classList.add('hidden');
             document.getElementById('success-confirmation').classList.add('opacity-0');
