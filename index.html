@@ -3,21 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    
-    <!-- Configuración PWA -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="BankPlay">
-    <meta name="theme-color" content="#0f172a">
-
-    <!-- Manifiesto Web con todos los campos obligatorios para instalación -->
-    <link rel="manifest" href="data:application/manifest+json,{'name':'BankPlay Datáfono','short_name':'BankPlay','start_url':'/','display':'standalone','orientation':'portrait','background_color':'#0f172a','theme_color':'#0f172a','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/10433/10433048.png','sizes':'512x512','type':'image/png','purpose':'any maskable'}]}">
-    
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💳</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💳</text></svg>">
-
-    <title>BankPlay - Datáfono de Juguete</title>
+    <title>BankPlay TPV - Contactless & Ticket</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         html, body { 
@@ -25,302 +11,371 @@
             overflow: hidden; 
             width: 100%; 
             height: 100%; 
-            overscroll-behavior: none;
+            background-color: #0f172a;
+            user-select: none;
+            touch-action: none;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
-
-        @keyframes pulse-soft {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
+        .product-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 1.25rem;
+            transition: transform 0.1s;
         }
-        @keyframes bounce-in {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.05); opacity: 1; }
-            70% { transform: scale(0.9); }
-            100% { transform: scale(1); }
-        }
-        @keyframes shine {
-            from { transform: translateX(-100%) rotate(45deg); }
-            to { transform: translateX(200%) rotate(45deg); }
-        }
-        @keyframes confetti {
-            0% { transform: translateY(0) rotate(0); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-
-        .animate-pulse-soft { animation: pulse-soft 2s infinite; }
-        .animate-bounce-in { animation: bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .product-card:active { transform: scale(0.95); background: #334155; }
         
-        .success-bg {
-            background-color: #15803d !important;
+        .success-screen {
+            background-color: #064e3b !important;
             transition: background-color 0.4s ease;
         }
 
-        .receipt-card {
-            background: white;
-            color: #0f172a;
-            border-radius: 1.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transform-origin: center;
+        .wave-anim {
+            animation: wave-blink 1.5s infinite;
+            opacity: 0.2;
+        }
+        .wave-1 { animation-delay: 0s; }
+        .wave-2 { animation-delay: 0.2s; }
+        .wave-3 { animation-delay: 0.4s; }
+        .wave-4 { animation-delay: 0.6s; }
+
+        @keyframes wave-blink {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
         }
 
-        .confetti-piece {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            top: -20px;
-            z-index: 50;
-            animation: confetti 3s linear forwards;
+        .pulse-bg {
+            animation: bg-pulse 3s infinite;
         }
+        @keyframes bg-pulse {
+            0% { transform: scale(1); opacity: 0.1; }
+            50% { transform: scale(1.3); opacity: 0.2; }
+            100% { transform: scale(1); opacity: 0.1; }
+        }
+        
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
-        .shine-effect {
+        /* Estilo del Ticket de Caja */
+        .receipt-paper {
+            background: #ffffff;
+            color: #1a1a1a;
+            font-family: 'Courier New', Courier, monospace;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             position: relative;
-            overflow: hidden;
         }
-        .shine-effect::after {
-            content: '';
+        .receipt-paper::after {
+            content: "";
             position: absolute;
-            top: 0; left: 0; width: 50%; height: 100%;
-            background: rgba(255,255,255,0.2);
-            transform: skewX(-25deg);
-            animation: shine 2s infinite;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(-45deg, transparent 5px, #ffffff 5px), linear-gradient(45deg, transparent 5px, #ffffff 5px);
+            background-size: 10px 10px;
         }
 
-        body { 
-            touch-action: none; 
-            -webkit-tap-highlight-color: transparent; 
-            user-select: none;
+        @keyframes bounce-in {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1) rotate(1deg); opacity: 1; }
         }
+        .animate-bounce-in { animation: bounce-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
     </style>
 </head>
-<body class="bg-slate-950 text-white font-sans flex flex-col">
+<body class="text-white flex flex-col h-full">
 
-    <div id="app-container" class="flex-1 flex flex-col p-6 transition-all duration-700">
-        
-        <!-- Cabecera -->
-        <div class="flex justify-between items-center mb-6 pt-2">
-            <div class="flex items-center bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700">
-                <div id="status-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
-                <span id="status-text" class="ml-2 text-[9px] font-mono text-slate-300 uppercase tracking-widest">Sensor Desactivado</span>
+    <!-- PANTALLA DE SELECCIÓN -->
+    <div id="view-menu" class="flex-1 flex flex-col p-4 overflow-hidden">
+        <header class="flex justify-between items-center mb-4">
+            <div>
+                <h1 class="text-xl font-black italic text-blue-500 tracking-tighter uppercase">BankPlay</h1>
+                <p class="text-[8px] text-slate-500 font-bold uppercase tracking-widest">Terminal de Cobro</p>
             </div>
-            <div class="text-xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">BANK-PLAY</div>
+            <button onclick="resetCart()" class="text-[9px] font-bold bg-slate-800 px-3 py-2 rounded-full text-slate-400 active:bg-red-900/40">BORRAR TODO</button>
+        </header>
+
+        <!-- Listado de Productos -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 flex-[2] overflow-y-auto custom-scroll pb-6 pr-1">
+            
+            <!-- COMIDA -->
+            <button onclick="add('Hamburguesa', 6.50)" class="product-card p-3 flex flex-col items-center">
+                <span class="text-2xl mb-1">🍔</span>
+                <span class="text-[9px] font-bold uppercase text-slate-400">Hamburguesa</span>
+                <span class="text-base font-black text-blue-400">6,50€</span>
+            </button>
+            <button onclick="add('Perrito', 4.80)" class="product-card p-3 flex flex-col items-center">
+                <span class="text-2xl mb-1">🌭</span>
+                <span class="text-[9px] font-bold uppercase text-slate-400">Perrito</span>
+                <span class="text-base font-black text-blue-400">4,80€</span>
+            </button>
+            <button onclick="add('Pulpo', 14.50)" class="product-card p-3 flex flex-col items-center border-orange-500/20">
+                <span class="text-2xl mb-1">🐙</span>
+                <span class="text-[9px] font-bold uppercase text-slate-400">Pulpo</span>
+                <span class="text-base font-black text-blue-400">14,50€</span>
+            </button>
+            <button onclick="add('Papas Fritas', 3.00)" class="product-card p-3 flex flex-col items-center">
+                <span class="text-2xl mb-1">🍟</span>
+                <span class="text-[9px] font-bold uppercase text-slate-400">Papas Fritas</span>
+                <span class="text-base font-black text-blue-400">3,00€</span>
+            </button>
+            <button onclick="add('Pizza', 8.50)" class="product-card p-3 flex flex-col items-center">
+                <span class="text-2xl mb-1">🍕</span>
+                <span class="text-[9px] font-bold uppercase text-slate-400">Pizza</span>
+                <span class="text-base font-black text-blue-400">8,50€</span>
+            </button>
+
+            <!-- BEBIDAS -->
+            <button onclick="add('Refresco', 2.20)" class="product-card p-3 flex flex-col items-center border-blue-500/20">
+                <span class="text-2xl mb-1">🥤</span>
+                <span class="text-[9px] font-bold uppercase text-slate-400">Refresco</span>
+                <span class="text-base font-black text-blue-400">2,20€</span>
+            </button>
+            <button onclick="add('Cerveza', 2.50)" class="product-card p-3 flex flex-col items-center border-blue-500/20">
+                <span class="text-2xl mb-1">🍺</span>
+                <span class="text-[9px] font-bold uppercase text-slate-400">Cerveza</span>
+                <span class="text-base font-black text-blue-400">2,50€</span>
+            </button>
+            <button onclick="add('Agua', 1.50)" class="product-card p-3 flex flex-col items-center border-blue-500/20">
+                <span class="text-2xl mb-1">💧</span>
+                <span class="text-[9px] font-bold uppercase text-slate-400">Agua</span>
+                <span class="text-base font-black text-blue-400">1,50€</span>
+            </button>
         </div>
 
-        <!-- Pantalla Principal -->
-        <div id="screen" class="bg-slate-900 rounded-[2.5rem] p-4 shadow-2xl border-4 border-slate-800 flex-1 flex flex-col justify-center items-center text-center relative overflow-hidden">
-            
-            <div id="confetti-container" class="absolute inset-0 pointer-events-none"></div>
+        <!-- VISOR DE PRODUCTOS AÑADIDOS -->
+        <div id="cart-preview" class="flex-1 bg-slate-900/50 rounded-2xl p-3 my-2 border border-slate-800 overflow-y-auto custom-scroll">
+            <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2 border-b border-slate-800 pb-1">Lista de Cobro</p>
+            <div id="cart-list" class="space-y-1 text-[11px]">
+                <p class="text-slate-600 italic">No hay productos seleccionados...</p>
+            </div>
+        </div>
 
-            <!-- Estado: Inicial -->
-            <div id="state-init" class="space-y-8 w-full max-xs px-4">
-                <div class="relative inline-block">
-                    <div class="absolute inset-0 bg-blue-500 blur-2xl opacity-20 animate-pulse"></div>
-                    <div class="w-20 h-20 bg-slate-800 rounded-3xl flex items-center justify-center border border-slate-700 relative shadow-inner">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                    </div>
-                </div>
+        <!-- Footer Total -->
+        <div class="bg-slate-900 p-6 -mx-4 border-t border-slate-800 rounded-t-[2rem]">
+            <div class="flex justify-between items-center">
                 <div>
-                    <h1 class="text-2xl font-black uppercase tracking-tight mb-2">Terminal Pro</h1>
-                    <p class="text-slate-500 text-sm italic">Toca el botón para despertar el sensor NFC</p>
+                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Total Cuenta</p>
+                    <p id="total-val" class="text-4xl font-black tabular-nums">0,00€</p>
                 </div>
-                <button id="btn-nfc" onclick="startNFC()" class="shine-effect bg-blue-600 hover:bg-blue-500 text-white w-full py-5 rounded-2xl font-black shadow-xl transform active:scale-95 transition-all uppercase tracking-widest text-sm border-b-4 border-blue-800">
-                    ACTIVAR SENSOR
+                <button id="pay-btn" onclick="goToPay()" disabled class="bg-blue-600 disabled:bg-slate-800 px-8 py-4 rounded-2xl font-black uppercase text-sm active:scale-95 shadow-lg shadow-blue-900/20">
+                    COBRAR
                 </button>
             </div>
-
-            <!-- Estado: Esperando Pago -->
-            <div id="state-waiting" class="hidden space-y-8 w-full">
-                <div class="px-6 py-2 bg-blue-500/10 rounded-full inline-block border border-blue-500/20">
-                    <span class="text-blue-400 text-[10px] uppercase font-bold tracking-[0.2em]">Importe</span>
-                </div>
-                <div class="text-7xl font-black tabular-nums tracking-tighter text-white" id="display-price">0,00€</div>
-                
-                <div class="pt-8 cursor-pointer group w-full" onclick="handleManualClick()">
-                    <div class="relative w-32 h-32 mx-auto mb-6">
-                        <div class="absolute inset-0 bg-blue-500 rounded-full opacity-10 animate-ping"></div>
-                        <div class="w-32 h-32 bg-slate-800/80 backdrop-blur rounded-full flex items-center justify-center animate-pulse-soft border-2 border-blue-500/30 group-active:scale-90 transition-transform shadow-2xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.708 0 3.342.43 4.77 1.189m1.026 1.199l.053.09c1.744 2.772 2.753 6.054 2.753 9.57m-1.458 3.228A4.89 4.89 0 0012 13c-1.373 0-2.636.564-3.558 1.472m8.583 3.045A4.891 4.891 0 0012 21c-1.373 0-2.636-.564-3.558-1.472m10.392-3.397a4.891 4.891 0 00-1.809-1.81L12 13" />
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="space-y-1">
-                        <p class="text-xl font-black tracking-tight text-white uppercase italic">Acerque Tarjeta</p>
-                        <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Cualquier señal activará el pago</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Estado: Éxito -->
-            <div id="state-success" class="hidden w-full max-w-[280px] animate-bounce-in z-20">
-                <div class="receipt-card p-8 flex flex-col items-center">
-                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-green-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
-                    <h2 class="text-2xl font-black mb-1 text-slate-900 uppercase">¡Vendido!</h2>
-                    <p class="text-slate-500 text-xs font-bold uppercase mb-4 tracking-widest">Pago Autorizado</p>
-                    <div class="w-full border-t border-dashed border-slate-200 my-4"></div>
-                    <div class="w-full space-y-3">
-                        <div class="flex justify-between text-xs font-bold uppercase text-slate-400 italic">
-                            <span>Monto</span>
-                            <span id="final-price" class="text-slate-900 font-black text-sm">0,00€</span>
-                        </div>
-                    </div>
-                    <div id="tag-id-display" class="mt-8 text-[9px] font-mono bg-slate-100 text-slate-400 py-1.5 px-4 rounded-full">ID: CONTACTLESS-OK</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Teclado Numérico -->
-        <div class="mt-8 grid grid-cols-3 gap-4">
-            <button onclick="addPrice(1)" class="bg-slate-800 h-20 rounded-[1.5rem] active:bg-slate-700 active:scale-90 transition-all font-black text-2xl border-b-8 border-slate-950 text-blue-400 flex flex-col items-center justify-center">
-                <span class="text-[10px] uppercase text-slate-500 font-bold mb-1">Plus</span>1€
-            </button>
-            <button onclick="addPrice(5)" class="bg-slate-800 h-20 rounded-[1.5rem] active:bg-slate-700 active:scale-90 transition-all font-black text-2xl border-b-8 border-slate-950 text-blue-400 flex flex-col items-center justify-center">
-                <span class="text-[10px] uppercase text-slate-500 font-bold mb-1">Medio</span>5€
-            </button>
-            <button onclick="addPrice(10)" class="bg-slate-800 h-20 rounded-[1.5rem] active:bg-slate-700 active:scale-90 transition-all font-black text-2xl border-b-8 border-slate-950 text-blue-400 flex flex-col items-center justify-center">
-                <span class="text-[10px] uppercase text-slate-500 font-bold mb-1">Max</span>10€
-            </button>
-            <button onclick="resetPrice()" class="col-span-3 bg-red-500/10 text-red-500 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest border border-red-500/20 active:bg-red-500/30 transition-all">
-                BORRAR TODO
-            </button>
         </div>
     </div>
 
-    <audio id="beep-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+    <!-- PANTALLA DE PAGO -->
+    <div id="view-pay" class="hidden flex-1 flex flex-col bg-slate-950 p-6 relative">
+        <div id="pay-interactive-zone" class="absolute inset-0 z-0" onpointerdown="processPayment()"></div>
+        
+        <div class="flex justify-between items-center z-10 relative pointer-events-none">
+            <button onclick="cancelPay()" class="text-slate-600 font-bold text-xs uppercase italic pointer-events-auto">Cancelar</button>
+            <div class="flex items-center gap-2 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span class="text-[8px] font-black text-blue-400 uppercase tracking-widest">Esperando Pago</span>
+            </div>
+        </div>
+
+        <div id="waiting-area" class="flex-1 flex flex-col items-center justify-center text-center z-10 relative pointer-events-none">
+            <div class="absolute w-72 h-72 bg-blue-500 rounded-full blur-[90px] pulse-bg pointer-events-none opacity-20"></div>
+            
+            <p class="text-blue-500 text-xs font-black uppercase tracking-[0.4em] mb-4">Pago por contacto</p>
+            <h2 id="pay-amt" class="text-7xl font-black italic mb-12 tracking-tighter text-white">0,00€</h2>
+            
+            <!-- Icono Contactless Circular -->
+            <div class="w-full flex items-center justify-center mb-8">
+                <div class="relative w-40 h-40 flex items-center justify-center border-4 border-blue-500/40 rounded-full">
+                    <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-blue-500">
+                        <path class="wave-anim wave-4" d="M75 15c15 15 23 35 23 50s-8 35-23 50" stroke="currentColor" stroke-width="8" stroke-linecap="round" transform="translate(-10, -15)"/>
+                        <path class="wave-anim wave-3" d="M60 25c10 10 15 25 15 40s-5 30-15 40" stroke="currentColor" stroke-width="8" stroke-linecap="round" transform="translate(-10, -15)"/>
+                        <path class="wave-anim wave-2" d="M45 35c7 7 10 17 10 30s-3 23-10 30" stroke="currentColor" stroke-width="8" stroke-linecap="round" transform="translate(-10, -15)"/>
+                        <path class="wave-anim wave-1" d="M30 45c3 3 5 10 5 20s-2 17-5 20" stroke="currentColor" stroke-width="8" stroke-linecap="round" transform="translate(-10, -15)"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <p class="text-xl font-black italic uppercase text-white tracking-widest animate-pulse">Acerque su Tarjeta</p>
+            <p class="text-[9px] text-slate-500 mt-2 font-bold uppercase tracking-widest italic">O toque en cualquier parte</p>
+        </div>
+
+        <!-- ÉXITO Y TICKET -->
+        <div id="success-area" class="hidden flex-1 flex flex-col items-center justify-center z-20 relative pt-10">
+            <!-- Mensaje éxito -->
+            <div id="success-confirmation" class="text-center mb-6">
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <h3 class="text-3xl font-black italic uppercase">¡PAGO CORRECTO!</h3>
+            </div>
+
+            <!-- Botón de Imprimir -->
+            <button id="print-btn" onclick="showTicket()" class="bg-white text-slate-900 px-8 py-4 rounded-2xl font-black uppercase text-sm shadow-xl flex items-center gap-3 active:scale-95 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                Imprimir Ticket
+            </button>
+
+            <!-- Ticket Visual -->
+            <div id="ticket-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6 backdrop-blur-sm" onclick="closeTicket()">
+                <div class="receipt-paper w-full max-w-xs p-8 rounded-sm text-[11px] animate-bounce-in" onclick="event.stopPropagation()">
+                    <div class="text-center border-b border-slate-300 pb-4 mb-4">
+                        <p class="font-black text-lg">BANKPLAY S.L.</p>
+                        <p>C/ Comercio, 123</p>
+                        <p>NIF: B-12345678</p>
+                        <p id="ticket-date" class="mt-2 opacity-70">--/--/-- --:--</p>
+                    </div>
+                    
+                    <div id="ticket-items" class="space-y-1 mb-4">
+                        <!-- Items dinámicos -->
+                    </div>
+
+                    <div class="border-t-2 border-slate-900 pt-3 flex justify-between font-black text-lg italic uppercase">
+                        <span>TOTAL</span>
+                        <span id="ticket-total">0,00€</span>
+                    </div>
+                    
+                    <div class="mt-6 text-center opacity-60">
+                        <p>***** COPIA CLIENTE *****</p>
+                        <p class="mt-2 font-bold italic uppercase">¡Gracias por su visita!</p>
+                        <div class="mt-4 flex justify-center opacity-30">
+                            <svg width="100" height="20" viewBox="0 0 100 20" fill="currentColor">
+                                <rect width="2" height="20" x="0"/> <rect width="4" height="20" x="5"/> <rect width="1" height="20" x="12"/>
+                                <rect width="6" height="20" x="16"/> <rect width="2" height="20" x="25"/> <rect width="4" height="20" x="30"/>
+                                <rect width="2" height="20" x="40"/> <rect width="8" height="20" x="45"/> <rect width="1" height="20" x="56"/>
+                                <rect width="4" height="20" x="60"/> <rect width="2" height="20" x="70"/> <rect width="6" height="20" x="75"/>
+                                <rect width="2" height="20" x="85"/> <rect width="4" height="20" x="90"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <button onclick="closeTicket()" class="mt-8 w-full bg-slate-100 py-3 font-bold uppercase tracking-widest text-[9px] rounded-lg">FINALIZAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        let currentPrice = 0;
-        
-        const displayPrice = document.getElementById('display-price');
-        const stateInit = document.getElementById('state-init');
-        const stateWaiting = document.getElementById('state-waiting');
-        const stateSuccess = document.getElementById('state-success');
-        const appContainer = document.getElementById('app-container');
-        const beepSound = document.getElementById('beep-sound');
-        const tagIdDisplay = document.getElementById('tag-id-display');
-        const statusDot = document.getElementById('status-dot');
-        const statusText = document.getElementById('status-text');
-        const finalPriceDisplay = document.getElementById('final-price');
-        const btnNfc = document.getElementById('btn-nfc');
+        let total = 0;
+        let cart = [];
+        let isPaid = false;
 
-        function updateDisplay() {
-            displayPrice.innerText = currentPrice.toFixed(2).replace('.', ',') + '€';
+        function add(name, price) {
+            total += price;
+            cart.push({name, price});
+            updateUI();
+            if (navigator.vibrate) navigator.vibrate(10);
         }
 
-        function addPrice(amount) {
-            currentPrice += amount;
-            updateDisplay();
-            if (currentPrice > 0 && stateSuccess.classList.contains('hidden')) {
-                stateInit.classList.add('hidden');
-                stateWaiting.classList.remove('hidden');
-            }
-        }
+        function updateUI() {
+            // Actualizar Total
+            document.getElementById('total-val').innerText = total.toFixed(2).replace('.', ',') + '€';
+            document.getElementById('pay-btn').disabled = cart.length === 0;
 
-        function resetPrice() {
-            currentPrice = 0;
-            updateDisplay();
-            stateInit.classList.remove('hidden');
-            stateWaiting.classList.add('hidden');
-            stateSuccess.classList.add('hidden');
-            appContainer.classList.remove('success-bg');
-        }
-
-        async function startNFC() {
-            if (!('NDEFReader' in window)) {
-                statusDot.className = "w-2.5 h-2.5 bg-yellow-500 rounded-full";
-                statusText.innerText = "NFC NO SOPORTADO";
-                btnNfc.innerText = "MODO TÁCTIL ACTIVADO";
-                btnNfc.classList.replace('bg-blue-600', 'bg-slate-700');
+            // Actualizar Visor de Productos
+            const list = document.getElementById('cart-list');
+            if (cart.length === 0) {
+                list.innerHTML = '<p class="text-slate-600 italic">No hay productos seleccionados...</p>';
                 return;
             }
 
-            try {
-                const ndef = new NDEFReader();
-                await ndef.scan();
-                
-                statusDot.className = "w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse";
-                statusText.innerText = "SENSOR ESCUCHANDO...";
-                btnNfc.innerText = "SENSOR ACTIVADO ✓";
-                btnNfc.classList.replace('bg-blue-600', 'bg-green-600');
-
-                ndef.onreading = ({ serialNumber }) => {
-                    if (currentPrice > 0) processPayment(serialNumber || "CHIP-RADIO");
-                };
-
-                ndef.onreadingerror = () => {
-                    if (currentPrice > 0) processPayment("CHIP-DETECTOR-OK");
-                };
-                
-            } catch (error) {
-                statusText.innerText = "ERROR PERMISO";
-                statusDot.className = "w-2.5 h-2.5 bg-red-500 rounded-full";
-            }
-        }
-
-        function handleManualClick() {
-            if (currentPrice > 0) processPayment("MANUAL-" + Math.floor(Math.random()*9999));
-        }
-
-        function spawnConfetti() {
-            const container = document.getElementById('confetti-container');
-            const colors = ['#3b82f6', '#22c55e', '#ffd700', '#f43f5e', '#ffffff'];
-            for(let i=0; i<40; i++) {
-                const p = document.createElement('div');
-                p.className = 'confetti-piece';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.background = colors[Math.floor(Math.random() * colors.length)];
-                p.style.animationDelay = Math.random() * 0.5 + 's';
-                p.style.width = (Math.random() * 8 + 6) + 'px';
-                p.style.height = (Math.random() * 8 + 6) + 'px';
-                container.appendChild(p);
-                setTimeout(() => p.remove(), 3000);
-            }
-        }
-
-        function processPayment(id) {
-            if (currentPrice <= 0 || !stateSuccess.classList.contains('hidden')) return;
-
-            try {
-                beepSound.currentTime = 0;
-                beepSound.play();
-            } catch(e) {}
-
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-
-            finalPriceDisplay.innerText = currentPrice.toFixed(2).replace('.', ',') + '€';
-            tagIdDisplay.innerText = "SENSADO: " + id;
-
-            stateWaiting.classList.add('hidden');
-            stateInit.classList.add('hidden');
-            stateSuccess.classList.remove('hidden');
-            appContainer.classList.add('success-bg');
-            spawnConfetti();
-
-            setTimeout(resetPrice, 5000);
-        }
-
-        // --- REGISTRO DE SERVICE WORKER PARA HABILITAR INSTALACIÓN ---
-        // Usamos una cadena base64 para evitar problemas de protocolo en el Canvas
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const swCode = "self.addEventListener('fetch', function(event) { event.respondWith(fetch(event.request)); });";
-                const swBlob = new Blob([swCode], {type: 'text/javascript'});
-                const swUrl = URL.createObjectURL(swBlob);
-                
-                // Nota: Algunos navegadores en entornos de iframe pueden seguir bloqueando esto.
-                // Si el error de 'protocol' persiste, es una limitación del sandbox de previsualización.
-                navigator.serviceWorker.register(swUrl).catch(err => {
-                    console.log("Instalación offline limitada por el entorno, pero el manifiesto sigue activo.");
-                });
+            // Agrupar para el visor
+            const counts = {};
+            cart.forEach(item => counts[item.name] = (counts[item.name] || 0) + 1);
+            
+            list.innerHTML = '';
+            Object.keys(counts).forEach(name => {
+                const itemData = cart.find(i => i.name === name);
+                const row = document.createElement('div');
+                row.className = 'flex justify-between items-center bg-slate-800/50 p-2 rounded-lg border border-slate-700/50';
+                row.innerHTML = `
+                    <span class="font-bold text-slate-300"><span class="text-blue-500">${counts[name]}x</span> ${name.toUpperCase()}</span>
+                    <span class="text-blue-400 font-black">${(itemData.price * counts[name]).toFixed(2)}€</span>
+                `;
+                list.appendChild(row);
             });
+            
+            // Auto-scroll al final del visor
+            const visor = document.getElementById('cart-preview');
+            visor.scrollTop = visor.scrollHeight;
         }
 
-        updateDisplay();
+        function resetCart() {
+            total = 0;
+            cart = [];
+            updateUI();
+        }
+
+        function goToPay() {
+            isPaid = false;
+            document.getElementById('view-menu').classList.add('hidden');
+            document.getElementById('view-pay').classList.remove('hidden');
+            document.getElementById('pay-amt').innerText = total.toFixed(2).replace('.', ',') + '€';
+        }
+
+        function cancelPay() {
+            document.getElementById('view-pay').classList.add('hidden');
+            document.getElementById('view-menu').classList.remove('hidden');
+            document.getElementById('waiting-area').classList.remove('hidden');
+            document.getElementById('success-area').classList.add('hidden');
+            document.getElementById('ticket-modal').classList.add('hidden');
+            document.body.classList.remove('success-screen');
+        }
+
+        function processPayment() {
+            if (isPaid) return;
+            isPaid = true;
+
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.value = 880; gain.gain.value = 0.1;
+            osc.start(); setTimeout(() => osc.stop(), 150);
+
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+            document.getElementById('waiting-area').classList.add('hidden');
+            document.getElementById('success-area').classList.remove('hidden');
+            document.body.classList.add('success-screen');
+        }
+
+        function showTicket() {
+            const list = document.getElementById('ticket-items');
+            list.innerHTML = '';
+            
+            const counts = {};
+            cart.forEach(item => counts[item.name] = (counts[item.name] || 0) + 1);
+            
+            Object.keys(counts).forEach(name => {
+                const itemData = cart.find(i => i.name === name);
+                const row = document.createElement('div');
+                row.className = 'flex justify-between uppercase';
+                row.innerHTML = `
+                    <span>${counts[name]}x ${name}</span>
+                    <span>${(itemData.price * counts[name]).toFixed(2)}</span>
+                `;
+                list.appendChild(row);
+            });
+
+            const now = new Date();
+            document.getElementById('ticket-date').innerText = 
+                `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            document.getElementById('ticket-total').innerText = total.toFixed(2).replace('.', ',') + '€';
+            
+            document.getElementById('ticket-modal').classList.remove('hidden');
+            document.getElementById('print-btn').classList.add('hidden');
+            document.getElementById('success-confirmation').classList.add('opacity-0');
+        }
+
+        function closeTicket() {
+            resetCart();
+            cancelPay();
+            document.getElementById('print-btn').classList.remove('hidden');
+            document.getElementById('success-confirmation').classList.remove('opacity-0');
+        }
     </script>
 </body>
 </html>
