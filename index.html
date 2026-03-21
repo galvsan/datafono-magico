@@ -63,12 +63,14 @@
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
 
+        /* Estilos del Ticket */
         .receipt-paper {
             background: #ffffff;
             color: #1a1a1a;
             font-family: 'Courier New', Courier, monospace;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             position: relative;
+            transform-origin: top center;
         }
         .receipt-paper::after {
             content: "";
@@ -81,11 +83,25 @@
             background-size: 10px 10px;
         }
 
-        @keyframes bounce-in {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1) rotate(1deg); opacity: 1; }
+        /* Animación de Impresión */
+        @keyframes print-slide {
+            0% { transform: translateY(-110%); }
+            100% { transform: translateY(0); }
         }
-        .animate-bounce-in { animation: bounce-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .printing-anim {
+            animation: print-slide 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        .printer-slot {
+            width: 320px;
+            height: 12px;
+            background: #111;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,1);
+            position: relative;
+            z-index: 60;
+            margin-bottom: -6px;
+        }
     </style>
 </head>
 <body class="text-white flex flex-col h-full">
@@ -102,8 +118,6 @@
 
         <!-- Listado de Productos -->
         <div class="grid grid-cols-3 gap-2 flex-[3] overflow-y-auto custom-scroll pb-6 pr-1">
-            
-            <!-- COMIDA -->
             <button onclick="add('Hamburguesa', 6.50)" class="product-card border-orange-500/20">
                 <span class="text-xl mb-1">🍔</span>
                 <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Hamburguesa</span>
@@ -149,8 +163,6 @@
                 <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Papas</span>
                 <span class="text-sm font-black text-blue-400">3,00€</span>
             </button>
-
-            <!-- BEBIDAS -->
             <button onclick="add('Refresco', 2.20)" class="product-card border-blue-500/20">
                 <span class="text-xl mb-1">🥤</span>
                 <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Refresco</span>
@@ -161,16 +173,6 @@
                 <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Cerveza</span>
                 <span class="text-sm font-black text-blue-400">2,50€</span>
             </button>
-            <button onclick="add('Leche', 1.80)" class="product-card border-white/20">
-                <span class="text-xl mb-1">🥛</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Leche</span>
-                <span class="text-sm font-black text-blue-400">1,80€</span>
-            </button>
-            <button onclick="add('Agua', 1.50)" class="product-card border-cyan-500/20">
-                <span class="text-xl mb-1">💧</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Agua</span>
-                <span class="text-sm font-black text-blue-400">1,50€</span>
-            </button>
             <button onclick="add('Café', 1.20)" class="product-card border-amber-800/20">
                 <span class="text-xl mb-1">☕</span>
                 <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Café</span>
@@ -178,7 +180,7 @@
             </button>
         </div>
 
-        <!-- VISOR DE PRODUCTOS (EDICIÓN) -->
+        <!-- VISOR DE PRODUCTOS -->
         <div id="cart-preview" class="flex-1 bg-slate-900/50 rounded-2xl p-3 my-2 border border-slate-800 overflow-y-auto custom-scroll">
             <div class="flex justify-between items-center mb-2 border-b border-slate-800 pb-1">
                 <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Resumen del Pedido</p>
@@ -230,7 +232,6 @@
                     </svg>
                 </div>
             </div>
-            
             <p class="text-xl font-black italic uppercase text-white tracking-widest animate-pulse">Acerque su Tarjeta</p>
         </div>
 
@@ -245,31 +246,34 @@
                 <h3 class="text-3xl font-black italic uppercase">¡PAGO CORRECTO!</h3>
             </div>
 
-            <button id="print-btn" onclick="showTicket(event)" class="bg-white text-slate-900 px-8 py-4 rounded-2xl font-black uppercase text-sm shadow-xl flex items-center gap-3 active:scale-95 transition-all pointer-events-auto">
+            <button id="print-btn" onclick="startPrinting()" class="bg-white text-slate-900 px-8 py-4 rounded-2xl font-black uppercase text-sm shadow-xl flex items-center gap-3 active:scale-95 transition-all pointer-events-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
                 Imprimir Ticket
             </button>
             
-            <!-- Ticket Visual -->
-            <div id="ticket-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6 backdrop-blur-sm pointer-events-auto" onclick="closeTicket()">
-                <div class="receipt-paper w-full max-w-xs p-8 rounded-sm text-[11px] animate-bounce-in" onclick="event.stopPropagation()">
-                    <div class="text-center border-b border-slate-300 pb-4 mb-4">
-                        <p class="font-black text-lg">BANKPLAY S.L.</p>
-                        <p>C/ Comercio, 123</p>
-                        <p id="ticket-date" class="mt-2 opacity-70">--/--/-- --:--</p>
+            <!-- Contenedor Animación Impresión -->
+            <div id="ticket-modal" class="hidden fixed inset-0 z-50 flex flex-col items-center pt-10 bg-black/80 backdrop-blur-sm pointer-events-auto" onclick="closeTicket()">
+                <div class="printer-slot"></div>
+                <div class="overflow-hidden w-full flex justify-center">
+                    <div id="ticket-paper" class="receipt-paper w-full max-w-xs p-8 rounded-sm text-[11px] mb-20" onclick="event.stopPropagation()">
+                        <div class="text-center border-b border-slate-300 pb-4 mb-4">
+                            <p class="font-black text-lg">BANKPLAY S.L.</p>
+                            <p>C/ Comercio, 123</p>
+                            <p id="ticket-date" class="mt-2 opacity-70">--/--/-- --:--</p>
+                        </div>
+                        <div id="ticket-items" class="space-y-1 mb-4"></div>
+                        <div class="border-t-2 border-slate-900 pt-3 flex justify-between font-black text-lg italic uppercase">
+                            <span>TOTAL</span>
+                            <span id="ticket-total">0,00€</span>
+                        </div>
+                        <div class="mt-6 text-center opacity-60">
+                            <p>***** COPIA CLIENTE *****</p>
+                            <p class="mt-2 font-bold italic uppercase">¡Gracias por su visita!</p>
+                        </div>
+                        <button onclick="closeTicket()" class="mt-8 w-full bg-slate-100 py-3 font-bold uppercase tracking-widest text-[9px] rounded-lg active:bg-slate-200">FINALIZAR</button>
                     </div>
-                    <div id="ticket-items" class="space-y-1 mb-4"></div>
-                    <div class="border-t-2 border-slate-900 pt-3 flex justify-between font-black text-lg italic uppercase">
-                        <span>TOTAL</span>
-                        <span id="ticket-total">0,00€</span>
-                    </div>
-                    <div class="mt-6 text-center opacity-60">
-                        <p>***** COPIA CLIENTE *****</p>
-                        <p class="mt-2 font-bold italic uppercase">¡Gracias por su visita!</p>
-                    </div>
-                    <button onclick="closeTicket()" class="mt-8 w-full bg-slate-100 py-3 font-bold uppercase tracking-widest text-[9px] rounded-lg active:bg-slate-200">FINALIZAR</button>
                 </div>
             </div>
         </div>
@@ -299,7 +303,6 @@
 
         function updateUI() {
             if (total < 0) total = 0;
-            
             document.getElementById('total-val').innerText = total.toFixed(2).replace('.', ',') + '€';
             document.getElementById('pay-btn').disabled = cart.length === 0;
 
@@ -352,15 +355,12 @@
             document.getElementById('success-area').classList.add('hidden');
             document.getElementById('ticket-modal').classList.add('hidden');
             document.body.classList.remove('success-screen');
+            document.getElementById('ticket-paper').classList.remove('printing-anim');
             isPaid = false;
         }
 
         function handleScreenTap() {
-            if (!isPaid) {
-                processPayment();
-            } else {
-                closeTicket(); 
-            }
+            if (!isPaid) processPayment();
         }
 
         function processPayment() {
@@ -371,7 +371,7 @@
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.value = 880; gain.gain.value = 0.1;
+            osc.frequency.value = 880; gain.gain.value = 0.05;
             osc.start(); setTimeout(() => osc.stop(), 150);
 
             if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
@@ -382,9 +382,8 @@
             document.body.classList.add('success-screen');
         }
 
-        function showTicket(event) {
-            if (event) event.stopPropagation();
-            
+        function startPrinting() {
+            // Preparar el ticket
             const list = document.getElementById('ticket-items');
             list.innerHTML = '';
             const counts = {};
@@ -401,7 +400,21 @@
             const now = new Date();
             document.getElementById('ticket-date').innerText = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
             document.getElementById('ticket-total').innerText = total.toFixed(2).replace('.', ',') + '€';
+            
+            // Iniciar animación
             document.getElementById('ticket-modal').classList.remove('hidden');
+            const paper = document.getElementById('ticket-paper');
+            paper.classList.add('printing-anim');
+            
+            // Sonido de impresión simulado (vibración rítmica)
+            const printInterval = setInterval(() => {
+                if (navigator.vibrate) navigator.vibrate(20);
+            }, 100);
+
+            setTimeout(() => {
+                clearInterval(printInterval);
+            }, 2500);
+
             document.getElementById('print-btn').classList.add('hidden');
             document.getElementById('success-confirmation').classList.add('opacity-0');
         }
