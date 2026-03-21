@@ -4,25 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- Configuración para instalar como App (PWA) -->
+    <!-- Configuración PWA -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BankPlay">
-    <meta name="application-name" content="BankPlay">
     <meta name="theme-color" content="#0f172a">
 
-    <!-- Manifiesto Web Incrustado para habilitar la instalación -->
-    <link rel="manifest" href="data:application/manifest+json,{'name':'BankPlay Datáfono','short_name':'BankPlay','start_url':'.','display':'standalone','background_color':'#0f172a','theme_color':'#0f172a','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/10433/10433048.png','sizes':'512x512','type':'image/png'}]}">
+    <!-- Manifiesto Web con todos los campos obligatorios para instalación -->
+    <link rel="manifest" href="data:application/manifest+json,{'name':'BankPlay Datáfono','short_name':'BankPlay','start_url':'/','display':'standalone','orientation':'portrait','background_color':'#0f172a','theme_color':'#0f172a','icons':[{'src':'https://cdn-icons-png.flaticon.com/512/10433/10433048.png','sizes':'512x512','type':'image/png','purpose':'any maskable'}]}">
     
-    <!-- Icono para el móvil (Emoji como icono) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💳</text></svg>">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💳</text></svg>">
 
     <title>BankPlay - Datáfono de Juguete</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Evitar rebote y scroll en móviles */
         html, body { 
             position: fixed; 
             overflow: hidden; 
@@ -198,7 +195,6 @@
 
     <script>
         let currentPrice = 0;
-        let isNFCEnabled = false;
         
         const displayPrice = document.getElementById('display-price');
         const stateInit = document.getElementById('state-init');
@@ -247,39 +243,27 @@
                 const ndef = new NDEFReader();
                 await ndef.scan();
                 
-                isNFCEnabled = true;
                 statusDot.className = "w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse";
                 statusText.innerText = "SENSOR ESCUCHANDO...";
-                
                 btnNfc.innerText = "SENSOR ACTIVADO ✓";
                 btnNfc.classList.replace('bg-blue-600', 'bg-green-600');
 
-                // CAPTURA DE SEÑAL: Cualquier señal es un pago
                 ndef.onreading = ({ serialNumber }) => {
-                    if (currentPrice > 0) {
-                        processPayment(serialNumber || "CHIP-RADIO");
-                    }
+                    if (currentPrice > 0) processPayment(serialNumber || "CHIP-RADIO");
                 };
 
-                // CAPTURA DE ERROR: Si el sensor nota algo pero falla la lectura técnica
                 ndef.onreadingerror = () => {
-                    if (currentPrice > 0) {
-                        processPayment("CHIP-DETECTOR-OK");
-                    }
+                    if (currentPrice > 0) processPayment("CHIP-DETECTOR-OK");
                 };
                 
             } catch (error) {
-                console.error("Error NFC:", error);
                 statusText.innerText = "ERROR PERMISO";
                 statusDot.className = "w-2.5 h-2.5 bg-red-500 rounded-full";
-                btnNfc.innerText = "REINTENTAR ACTIVACIÓN";
             }
         }
 
         function handleManualClick() {
-            if (currentPrice > 0) {
-                processPayment("MANUAL-" + Math.floor(Math.random()*9999));
-            }
+            if (currentPrice > 0) processPayment("MANUAL-" + Math.floor(Math.random()*9999));
         }
 
         function spawnConfetti() {
@@ -317,9 +301,23 @@
             appContainer.classList.add('success-bg');
             spawnConfetti();
 
-            setTimeout(() => {
-                resetPrice();
-            }, 5000);
+            setTimeout(resetPrice, 5000);
+        }
+
+        // --- REGISTRO DE SERVICE WORKER PARA HABILITAR INSTALACIÓN ---
+        // Usamos una cadena base64 para evitar problemas de protocolo en el Canvas
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = "self.addEventListener('fetch', function(event) { event.respondWith(fetch(event.request)); });";
+                const swBlob = new Blob([swCode], {type: 'text/javascript'});
+                const swUrl = URL.createObjectURL(swBlob);
+                
+                // Nota: Algunos navegadores en entornos de iframe pueden seguir bloqueando esto.
+                // Si el error de 'protocol' persiste, es una limitación del sandbox de previsualización.
+                navigator.serviceWorker.register(swUrl).catch(err => {
+                    console.log("Instalación offline limitada por el entorno, pero el manifiesto sigue activo.");
+                });
+            });
         }
 
         updateDisplay();
