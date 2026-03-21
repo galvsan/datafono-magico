@@ -100,7 +100,7 @@
         <div class="flex justify-between items-center mb-6 pt-2">
             <div class="flex items-center bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700">
                 <div id="status-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
-                <span id="status-text" class="ml-2 text-[9px] font-mono text-slate-300 uppercase tracking-widest">Listo</span>
+                <span id="status-text" class="ml-2 text-[9px] font-mono text-slate-300 uppercase tracking-widest">Desconectado</span>
             </div>
             <div class="text-xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">BANK-PLAY</div>
         </div>
@@ -122,9 +122,9 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-black uppercase tracking-tight mb-2">Terminal Pro</h1>
-                    <p class="text-slate-500 text-sm">Marca un precio para cobrar</p>
+                    <p class="text-slate-500 text-sm">Primero activa el sensor</p>
                 </div>
-                <button onclick="startNFC()" class="shine-effect bg-blue-600 hover:bg-blue-500 text-white w-full py-5 rounded-2xl font-black shadow-xl transform active:scale-95 transition-all uppercase tracking-widest text-sm border-b-4 border-blue-800">
+                <button id="btn-nfc" onclick="startNFC()" class="shine-effect bg-blue-600 hover:bg-blue-500 text-white w-full py-5 rounded-2xl font-black shadow-xl transform active:scale-95 transition-all uppercase tracking-widest text-sm border-b-4 border-blue-800">
                     Activar Sensor
                 </button>
             </div>
@@ -195,6 +195,7 @@
 
     <script>
         let currentPrice = 0;
+        let isNFCEnabled = false;
         
         const displayPrice = document.getElementById('display-price');
         const stateInit = document.getElementById('state-init');
@@ -206,6 +207,7 @@
         const statusDot = document.getElementById('status-dot');
         const statusText = document.getElementById('status-text');
         const finalPriceDisplay = document.getElementById('final-price');
+        const btnNfc = document.getElementById('btn-nfc');
 
         function updateDisplay() {
             displayPrice.innerText = currentPrice.toFixed(2).replace('.', ',') + '€';
@@ -232,27 +234,43 @@
         async function startNFC() {
             if (!('NDEFReader' in window)) {
                 statusDot.className = "w-2.5 h-2.5 bg-yellow-500 rounded-full";
-                statusText.innerText = "Modo Táctil";
+                statusText.innerText = "Solo Táctil";
+                btnNfc.innerText = "NFC NO SOPORTADO";
+                btnNfc.classList.replace('bg-blue-600', 'bg-slate-700');
                 return;
             }
 
             try {
                 const ndef = new NDEFReader();
+                // Forzamos el escaneo inmediatamente
                 await ndef.scan();
+                
+                isNFCEnabled = true;
                 statusDot.className = "w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse";
                 statusText.innerText = "Sensor Activo";
+                
+                btnNfc.innerText = "SENSOR LISTO";
+                btnNfc.classList.replace('bg-blue-600', 'bg-green-600');
 
-                ndef.addEventListener("reading", ({ serialNumber }) => {
-                    processPayment(serialNumber);
-                });
+                ndef.onreadingerror = () => {
+                    console.log("Error de lectura NFC.");
+                };
+
+                ndef.onreading = ({ serialNumber }) => {
+                    // Si el sensor lee algo, disparamos el pago
+                    processPayment(serialNumber || "NFC-TAG");
+                };
+                
             } catch (error) {
-                statusText.innerText = "Error Sensor";
+                console.error(error);
+                statusText.innerText = "Error Permiso";
+                statusDot.className = "w-2.5 h-2.5 bg-red-500 rounded-full";
             }
         }
 
         function handleManualClick() {
             if (currentPrice > 0) {
-                processPayment("CARD-" + Math.floor(Math.random()*10000));
+                processPayment("MANUAL-" + Math.floor(Math.random()*10000));
             }
         }
 
@@ -273,6 +291,7 @@
         }
 
         function processPayment(id) {
+            // Solo procesar si hay un precio marcado y no estamos ya en éxito
             if (currentPrice <= 0 || !stateSuccess.classList.contains('hidden')) return;
 
             try {
@@ -280,7 +299,7 @@
                 beepSound.play();
             } catch(e) {}
 
-            if (navigator.vibrate) navigator.vibrate([100, 50, 150]);
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
             finalPriceDisplay.innerText = currentPrice.toFixed(2).replace('.', ',') + '€';
             tagIdDisplay.innerText = "ID: " + id;
@@ -293,7 +312,7 @@
 
             setTimeout(() => {
                 resetPrice();
-            }, 4000);
+            }, 5000);
         }
 
         updateDisplay();
