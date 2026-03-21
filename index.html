@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Meta etiquetas para PWA (Instalar como App) -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="BankPlay">
+    <meta name="application-name" content="BankPlay">
+    <meta name="theme-color" content="#0f172a">
+    <title>BankPlay - Datáfono de Juguete</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        @keyframes bounce-in {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+        @keyframes shine {
+            from { transform: translateX(-100%) rotate(45deg); }
+            to { transform: translateX(200%) rotate(45deg); }
+        }
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .animate-pulse-soft { animation: pulse-soft 2s infinite; }
+        .animate-bounce-in { animation: bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        
+        .success-bg {
+            background-color: #15803d !important;
+            transition: background-color 0.4s ease;
+        }
+
+        .receipt-card {
+            background: white;
+            color: #0f172a;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform-origin: center;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: -20px;
+            z-index: 50;
+            animation: confetti 3s linear forwards;
+        }
+
+        .shine-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        .shine-effect::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 50%; height: 100%;
+            background: rgba(255,255,255,0.2);
+            transform: skewX(-25deg);
+            animation: shine 2s infinite;
+        }
+
+        body { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body class="bg-slate-950 text-white font-sans overflow-hidden h-screen flex flex-col">
+
+    <div id="app-container" class="flex-1 flex flex-col p-6 transition-all duration-700">
+        
+        <!-- Cabecera -->
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700">
+                <div id="status-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
+                <span id="status-text" class="ml-2 text-[9px] font-mono text-slate-300 uppercase tracking-widest">Listo para cobrar</span>
+            </div>
+            <div class="text-xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">BANK-PLAY</div>
+        </div>
+
+        <!-- Pantalla Principal -->
+        <div id="screen" class="bg-slate-900 rounded-[2.5rem] p-4 shadow-2xl border-4 border-slate-800 flex-1 flex flex-col justify-center items-center text-center relative overflow-hidden">
+            
+            <!-- Confeti Container -->
+            <div id="confetti-container" class="absolute inset-0 pointer-events-none"></div>
+
+            <!-- Estado: Inicial -->
+            <div id="state-init" class="space-y-8 w-full max-w-xs px-4">
+                <div class="relative inline-block">
+                    <div class="absolute inset-0 bg-blue-500 blur-2xl opacity-20 animate-pulse"></div>
+                    <div class="w-20 h-20 bg-slate-800 rounded-3xl flex items-center justify-center border border-slate-700 relative shadow-inner">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black uppercase tracking-tight mb-2">Terminal Pro</h1>
+                    <p class="text-slate-500 text-sm leading-relaxed">Marca un precio abajo para empezar</p>
+                </div>
+                <button onclick="startNFC()" class="shine-effect bg-blue-600 hover:bg-blue-500 text-white w-full py-5 rounded-2xl font-black shadow-xl transform active:scale-95 transition-all uppercase tracking-widest text-sm border-b-4 border-blue-800">
+                    Encender Lector
+                </button>
+            </div>
+
+            <!-- Estado: Esperando Pago -->
+            <div id="state-waiting" class="hidden space-y-8 w-full">
+                <div class="px-6 py-2 bg-blue-500/10 rounded-full inline-block border border-blue-500/20">
+                    <span class="text-blue-400 text-[10px] uppercase font-bold tracking-[0.2em]">Importe Total</span>
+                </div>
+                <div class="text-7xl font-black tabular-nums tracking-tighter text-white" id="display-price">0,00€</div>
+                
+                <!-- ÁREA DE TOQUE/NFC -->
+                <div class="pt-8 cursor-pointer group w-full" onclick="handleManualClick()">
+                    <div class="relative w-32 h-32 mx-auto mb-6">
+                        <div class="absolute inset-0 bg-blue-500 rounded-full opacity-10 animate-ping"></div>
+                        <div class="w-32 h-32 bg-slate-800/80 backdrop-blur rounded-full flex items-center justify-center animate-pulse-soft border-2 border-blue-500/30 group-active:scale-90 transition-transform shadow-2xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-14 w-14 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.708 0 3.342.43 4.77 1.189m1.026 1.199l.053.09c1.744 2.772 2.753 6.054 2.753 9.57m-1.458 3.228A4.89 4.89 0 0012 13c-1.373 0-2.636.564-3.558 1.472m8.583 3.045A4.891 4.891 0 0012 21c-1.373 0-2.636-.564-3.558-1.472m10.392-3.397a4.891 4.891 0 00-1.809-1.81L12 13" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <p id="instruction-text" class="text-xl font-black tracking-tight text-white uppercase italic">Acerque su Tarjeta</p>
+                        <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">O toca el círculo azul</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado: Éxito (Recibo) -->
+            <div id="state-success" class="hidden w-full max-w-[280px] animate-bounce-in z-20">
+                <div class="receipt-card p-8 flex flex-col items-center">
+                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-green-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-black mb-1 text-slate-900 uppercase">¡Vendido!</h2>
+                    <p class="text-slate-500 text-xs font-bold uppercase mb-4 tracking-widest">Pago Autorizado</p>
+                    
+                    <div class="w-full border-t border-dashed border-slate-200 my-4"></div>
+                    
+                    <div class="w-full space-y-3">
+                        <div class="flex justify-between text-xs font-bold uppercase text-slate-400 italic">
+                            <span>Monto</span>
+                            <span id="final-price" class="text-slate-900 font-black text-sm">0,00€</span>
+                        </div>
+                        <div class="flex justify-between text-[10px] font-mono text-slate-400">
+                            <span>Estado</span>
+                            <span class="text-green-600 font-bold">COMPLETADO</span>
+                        </div>
+                    </div>
+
+                    <div id="tag-id-display" class="mt-8 text-[9px] font-mono bg-slate-100 text-slate-400 py-1.5 px-4 rounded-full">ID: ----</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teclado Numérico -->
+        <div class="mt-8 grid grid-cols-3 gap-4">
+            <button onclick="addPrice(1)" class="bg-slate-800 h-20 rounded-[1.5rem] active:bg-slate-700 active:scale-90 transition-all font-black text-2xl border-b-8 border-slate-950 text-blue-400 flex flex-col items-center justify-center">
+                <span class="text-xs uppercase text-slate-500 font-bold mb-1 tracking-tighter">Sencillo</span>
+                1€
+            </button>
+            <button onclick="addPrice(5)" class="bg-slate-800 h-20 rounded-[1.5rem] active:bg-slate-700 active:scale-90 transition-all font-black text-2xl border-b-8 border-slate-950 text-blue-400 flex flex-col items-center justify-center">
+                <span class="text-xs uppercase text-slate-500 font-bold mb-1 tracking-tighter">Normal</span>
+                5€
+            </button>
+            <button onclick="addPrice(10)" class="bg-slate-800 h-20 rounded-[1.5rem] active:bg-slate-700 active:scale-90 transition-all font-black text-2xl border-b-8 border-slate-950 text-blue-400 flex flex-col items-center justify-center">
+                <span class="text-xs uppercase text-slate-500 font-bold mb-1 tracking-tighter">Súper</span>
+                10€
+            </button>
+            <button onclick="resetPrice()" class="col-span-3 bg-red-500/5 text-red-500/60 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.3em] border border-red-500/20 mt-2 active:bg-red-500/20 transition-all">
+                Cancelar Cobro
+            </button>
+        </div>
+
+        <div id="error-info" class="mt-4 text-center text-slate-600 text-[8px] font-mono uppercase px-4 leading-tight"></div>
+
+    </div>
+
+    <audio id="beep-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
+    <script>
+        let currentPrice = 0;
+        let nfcActive = false;
+        
+        const displayPrice = document.getElementById('display-price');
+        const stateInit = document.getElementById('state-init');
+        const stateWaiting = document.getElementById('state-waiting');
+        const stateSuccess = document.getElementById('state-success');
+        const appContainer = document.getElementById('app-container');
+        const beepSound = document.getElementById('beep-sound');
+        const tagIdDisplay = document.getElementById('tag-id-display');
+        const errorInfo = document.getElementById('error-info');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const finalPriceDisplay = document.getElementById('final-price');
+
+        function updateDisplay() {
+            displayPrice.innerText = currentPrice.toFixed(2).replace('.', ',') + '€';
+        }
+
+        function addPrice(amount) {
+            currentPrice += amount;
+            updateDisplay();
+            if (currentPrice > 0) {
+                stateInit.classList.add('hidden');
+                stateWaiting.classList.remove('hidden');
+                stateSuccess.classList.add('hidden');
+                appContainer.classList.remove('success-bg');
+            }
+        }
+
+        function resetPrice() {
+            currentPrice = 0;
+            updateDisplay();
+            stateInit.classList.remove('hidden');
+            stateWaiting.classList.add('hidden');
+            stateSuccess.classList.add('hidden');
+            appContainer.classList.remove('success-bg');
+        }
+
+        async function startNFC() {
+            const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+            
+            if (!isSecure || !('NDEFReader' in window)) {
+                statusDot.className = "w-2.5 h-2.5 bg-yellow-500 rounded-full";
+                statusText.innerText = "Modo Juego Táctil";
+                nfcActive = true; 
+                return;
+            }
+
+            try {
+                const ndef = new NDEFReader();
+                await ndef.scan();
+                nfcActive = true;
+                statusDot.className = "w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse";
+                statusText.innerText = "Lector NFC Activo";
+
+                ndef.addEventListener("reading", ({ serialNumber }) => {
+                    processPayment(serialNumber);
+                });
+            } catch (error) {
+                statusText.innerText = "Modo Juego Táctil";
+                nfcActive = true;
+            }
+        }
+
+        function handleManualClick() {
+            if (currentPrice > 0) {
+                processPayment("JUEGO-" + Math.floor(Math.random()*10000));
+            } else {
+                document.getElementById('screen').classList.add('error-shake');
+                setTimeout(() => document.getElementById('screen').classList.remove('error-shake'), 500);
+            }
+        }
+
+        function spawnConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#3b82f6', '#22c55e', '#ffd700', '#f43f5e', '#ffffff'];
+            for(let i=0; i<35; i++) {
+                const p = document.createElement('div');
+                p.className = 'confetti-piece';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDelay = Math.random() * 0.5 + 's';
+                p.style.width = (Math.random() * 8 + 5) + 'px';
+                p.style.height = (Math.random() * 8 + 5) + 'px';
+                container.appendChild(p);
+                setTimeout(() => p.remove(), 3000);
+            }
+        }
+
+        function processPayment(id) {
+            if (currentPrice <= 0) return;
+
+            try {
+                beepSound.currentTime = 0;
+                beepSound.play();
+            } catch(e) {}
+
+            if (navigator.vibrate) navigator.vibrate([100, 50, 150]);
+
+            finalPriceDisplay.innerText = currentPrice.toFixed(2).replace('.', ',') + '€';
+            tagIdDisplay.innerText = "ID: " + id;
+
+            stateWaiting.classList.add('hidden');
+            stateSuccess.classList.remove('hidden');
+            appContainer.classList.add('success-bg');
+            spawnConfetti();
+
+            setTimeout(() => {
+                resetPrice();
+            }, 4000);
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
