@@ -100,7 +100,7 @@
         <div class="flex justify-between items-center mb-6 pt-2">
             <div class="flex items-center bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700">
                 <div id="status-dot" class="w-2.5 h-2.5 bg-red-500 rounded-full"></div>
-                <span id="status-text" class="ml-2 text-[9px] font-mono text-slate-300 uppercase tracking-widest">Desconectado</span>
+                <span id="status-text" class="ml-2 text-[9px] font-mono text-slate-300 uppercase tracking-widest">Sensor Desactivado</span>
             </div>
             <div class="text-xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">BANK-PLAY</div>
         </div>
@@ -122,10 +122,10 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-black uppercase tracking-tight mb-2">Terminal Pro</h1>
-                    <p class="text-slate-500 text-sm">Primero activa el sensor</p>
+                    <p class="text-slate-500 text-sm italic">Toca el botón para despertar el sensor NFC</p>
                 </div>
                 <button id="btn-nfc" onclick="startNFC()" class="shine-effect bg-blue-600 hover:bg-blue-500 text-white w-full py-5 rounded-2xl font-black shadow-xl transform active:scale-95 transition-all uppercase tracking-widest text-sm border-b-4 border-blue-800">
-                    Activar Sensor
+                    ACTIVAR SENSOR
                 </button>
             </div>
 
@@ -147,7 +147,7 @@
                     </div>
                     <div class="space-y-1">
                         <p class="text-xl font-black tracking-tight text-white uppercase italic">Acerque Tarjeta</p>
-                        <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">O toca el círculo azul</p>
+                        <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">El sensor está en la parte trasera</p>
                     </div>
                 </div>
             </div>
@@ -186,7 +186,7 @@
                 <span class="text-[10px] uppercase text-slate-500 font-bold mb-1">Max</span>10€
             </button>
             <button onclick="resetPrice()" class="col-span-3 bg-red-500/10 text-red-500 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest border border-red-500/20 active:bg-red-500/30 transition-all">
-                Cancelar
+                BORRAR TODO
             </button>
         </div>
     </div>
@@ -234,43 +234,47 @@
         async function startNFC() {
             if (!('NDEFReader' in window)) {
                 statusDot.className = "w-2.5 h-2.5 bg-yellow-500 rounded-full";
-                statusText.innerText = "Solo Táctil";
-                btnNfc.innerText = "NFC NO SOPORTADO";
+                statusText.innerText = "NFC NO SOPORTADO";
+                btnNfc.innerText = "MODO TÁCTIL (TOCA EL CÍRCULO)";
                 btnNfc.classList.replace('bg-blue-600', 'bg-slate-700');
                 return;
             }
 
             try {
+                // El permiso se pide al instanciar y ejecutar scan()
                 const ndef = new NDEFReader();
-                // Forzamos el escaneo inmediatamente
                 await ndef.scan();
                 
                 isNFCEnabled = true;
                 statusDot.className = "w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse";
-                statusText.innerText = "Sensor Activo";
+                statusText.innerText = "SENSOR ESCUCHANDO...";
                 
-                btnNfc.innerText = "SENSOR LISTO";
+                btnNfc.innerText = "SENSOR ACTIVADO ✓";
                 btnNfc.classList.replace('bg-blue-600', 'bg-green-600');
 
-                ndef.onreadingerror = () => {
-                    console.log("Error de lectura NFC.");
+                // Listener persistente
+                ndef.onreading = ({ serialNumber }) => {
+                    if (currentPrice > 0) {
+                        processPayment(serialNumber || "CHIP-NFC");
+                    }
                 };
 
-                ndef.onreading = ({ serialNumber }) => {
-                    // Si el sensor lee algo, disparamos el pago
-                    processPayment(serialNumber || "NFC-TAG");
+                ndef.onreadingerror = () => {
+                    statusText.innerText = "ERROR DE LECTURA";
+                    setTimeout(() => { statusText.innerText = "SENSOR ESCUCHANDO..."; }, 2000);
                 };
                 
             } catch (error) {
-                console.error(error);
-                statusText.innerText = "Error Permiso";
+                console.error("Error NFC:", error);
+                statusText.innerText = "PERMISO DENEGADO";
                 statusDot.className = "w-2.5 h-2.5 bg-red-500 rounded-full";
+                btnNfc.innerText = "REINTENTAR ACTIVACIÓN";
             }
         }
 
         function handleManualClick() {
             if (currentPrice > 0) {
-                processPayment("MANUAL-" + Math.floor(Math.random()*10000));
+                processPayment("DEMO-" + Math.floor(Math.random()*9999));
             }
         }
 
@@ -291,7 +295,6 @@
         }
 
         function processPayment(id) {
-            // Solo procesar si hay un precio marcado y no estamos ya en éxito
             if (currentPrice <= 0 || !stateSuccess.classList.contains('hidden')) return;
 
             try {
@@ -302,7 +305,7 @@
             if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
             finalPriceDisplay.innerText = currentPrice.toFixed(2).replace('.', ',') + '€';
-            tagIdDisplay.innerText = "ID: " + id;
+            tagIdDisplay.innerText = "TARJETA: " + id;
 
             stateWaiting.classList.add('hidden');
             stateInit.classList.add('hidden');
@@ -310,6 +313,7 @@
             appContainer.classList.add('success-bg');
             spawnConfetti();
 
+            // Reiniciar automáticamente tras 5 segundos
             setTimeout(() => {
                 resetPrice();
             }, 5000);
