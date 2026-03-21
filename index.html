@@ -147,7 +147,7 @@
                     </div>
                     <div class="space-y-1">
                         <p class="text-xl font-black tracking-tight text-white uppercase italic">Acerque Tarjeta</p>
-                        <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Sensor activo en la parte trasera</p>
+                        <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Aproxime cualquier chip al sensor</p>
                     </div>
                 </div>
             </div>
@@ -169,7 +169,7 @@
                             <span id="final-price" class="text-slate-900 font-black text-sm">0,00€</span>
                         </div>
                     </div>
-                    <div id="tag-id-display" class="mt-8 text-[9px] font-mono bg-slate-100 text-slate-400 py-1.5 px-4 rounded-full">ID: ----</div>
+                    <div id="tag-id-display" class="mt-8 text-[9px] font-mono bg-slate-100 text-slate-400 py-1.5 px-4 rounded-full">ID: CONTACTLESS-OK</div>
                 </div>
             </div>
         </div>
@@ -251,17 +251,20 @@
                 btnNfc.innerText = "SENSOR ACTIVADO ✓";
                 btnNfc.classList.replace('bg-blue-600', 'bg-green-600');
 
+                // CAPTURA DE SEÑAL: Cualquier señal es un pago
                 ndef.onreading = ({ serialNumber }) => {
+                    console.log("Señal detectada (Reading)");
                     if (currentPrice > 0) {
-                        processPayment(serialNumber || "CHIP-NFC");
+                        processPayment(serialNumber || "CHIP-RADIO");
                     }
                 };
 
-                // MEJORA: Si hay error de lectura, lo tratamos como un pago válido
-                // porque el móvil detectó "algo", suficiente para el juego.
-                ndef.onreadingerror = () => {
+                // CAPTURA DE ERROR: Si el sensor nota algo pero falla la lectura técnica,
+                // para el juego lo contamos como un pago válido.
+                ndef.onreadingerror = (event) => {
+                    console.log("Señal detectada pero con error técnico. Procesando pago de todos modos.");
                     if (currentPrice > 0) {
-                        processPayment("CHIP-GENERICO");
+                        processPayment("CHIP-DETECTOR-OK");
                     }
                 };
                 
@@ -275,7 +278,7 @@
 
         function handleManualClick() {
             if (currentPrice > 0) {
-                processPayment("DEMO-" + Math.floor(Math.random()*9999));
+                processPayment("MANUAL-" + Math.floor(Math.random()*9999));
             }
         }
 
@@ -296,6 +299,7 @@
         }
 
         function processPayment(id) {
+            // Si ya estamos en pantalla de éxito, ignoramos nuevas señales
             if (currentPrice <= 0 || !stateSuccess.classList.contains('hidden')) return;
 
             try {
@@ -306,7 +310,7 @@
             if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
 
             finalPriceDisplay.innerText = currentPrice.toFixed(2).replace('.', ',') + '€';
-            tagIdDisplay.innerText = "TARJETA: " + id;
+            tagIdDisplay.innerText = "SENSADO: " + id;
 
             stateWaiting.classList.add('hidden');
             stateInit.classList.add('hidden');
@@ -314,6 +318,7 @@
             appContainer.classList.add('success-bg');
             spawnConfetti();
 
+            // Tiempo de espera para volver a empezar
             setTimeout(() => {
                 resetPrice();
             }, 5000);
