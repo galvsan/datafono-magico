@@ -1,430 +1,1274 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>BankPlay TPV - Menú Completo</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Restaurante "Casa Adrián"</title>
+    <meta name="description" content="TPV de juguete para que los niños jueguen a cobrar en el Restaurante Casa Adrián.">
+
+    <!-- PWA & iOS Compatibility -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3133/3133160.png">
+    <meta name="theme-color" content="#eef2ff">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
-        html, body { 
-            position: fixed; 
-            overflow: hidden; 
-            width: 100%; 
-            height: 100%; 
-            background-color: #0f172a;
+        :root {
+            --bg: #eef2ff;
+            --card: #ffffff;
+            --primary: #1e3a5f;
+            --primary-light: #dbeafe;
+            --accent-green: #d1fae5;
+            --accent-green-dark: #065f46;
+            --accent-yellow: #fef9c3;
+            --accent-red: #fee2e2;
+            --accent-red-dark: #dc2626;
+            --text-dark: #1e293b;
+            --text-muted: #94a3b8;
+            --shadow: 0 4px 20px rgba(30, 58, 95, 0.08);
+            --shadow-lg: 0 8px 30px rgba(30, 58, 95, 0.12);
+            --radius: 20px;
+            --radius-lg: 28px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            position: fixed;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
             user-select: none;
-            touch-action: none;
-            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            font-family: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+            color: var(--text-dark);
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========== UTILITY ========== */
+        .view { display: none; flex-direction: column; flex: 1; overflow: hidden; }
+        .view.active { display: flex; }
+
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* ========== HEADER ========== */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px 8px;
+        }
+        .app-header h1 {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        .balance-pill {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 13px;
+            padding: 6px 16px;
+            border-radius: 50px;
+        }
+
+        /* ========== PRODUCT GRID ========== */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            padding: 12px 20px;
+            overflow-y: auto;
+            flex: 1;
         }
         .product-card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 1rem;
-            transition: transform 0.1s;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0.5rem;
-            min-height: 80px;
+            padding: 20px 12px 16px;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            border: none;
+            outline: none;
         }
-        .product-card:active { transform: scale(0.95); background: #334155; }
-        
-        .success-screen {
-            background-color: #064e3b !important;
-            transition: background-color 0.4s ease;
+        .product-card:active { transform: scale(0.95); box-shadow: var(--shadow-lg); }
+        .product-card .emoji { font-size: 42px; margin-bottom: 8px; }
+        .product-card .name { font-size: 13px; font-weight: 800; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.5px; }
+        .product-card .price { font-size: 16px; font-weight: 900; color: var(--primary); margin-top: 4px; }
+
+        /* ========== FLOATING ACTION ========== */
+        .fab-order {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 24px;
+            font-weight: 800;
+            font-size: 14px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 30;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .fab-order:active { transform: scale(0.95); }
+        .fab-order .badge {
+            background: #ef4444;
+            color: white;
+            font-size: 12px;
+            font-weight: 900;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .wave-anim {
-            animation: wave-blink 1.5s infinite;
-            opacity: 0.2;
+        /* ========== BOTTOM NAV ========== */
+        .bottom-nav {
+            display: flex;
+            background: var(--card);
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.06);
+            padding: 8px 0 env(safe-area-inset-bottom, 8px);
+            z-index: 40;
+            flex-shrink: 0;
         }
-        .wave-1 { animation-delay: 0s; }
-        .wave-2 { animation-delay: 0.2s; }
-        .wave-3 { animation-delay: 0.4s; }
-        .wave-4 { animation-delay: 0.6s; }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 6px 0;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+        .nav-item.active {
+            color: var(--primary);
+        }
+        .nav-item .material-icons-round { font-size: 26px; }
 
-        @keyframes wave-blink {
-            0% { opacity: 0.2; }
-            50% { opacity: 1; }
-            100% { opacity: 0.2; }
+        /* ========== ORDER PAGE ========== */
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 14px 16px;
+        }
+        .order-item .item-emoji {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .order-item .item-info { flex: 1; }
+        .order-item .item-name { font-weight: 800; font-size: 14px; }
+        .order-item .item-price { font-weight: 700; font-size: 13px; color: var(--text-muted); }
+        .stepper {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            background: var(--primary-light);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        .stepper button {
+            width: 34px;
+            height: 34px;
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stepper button:active { background: rgba(30,58,95,0.1); }
+        .stepper .qty {
+            width: 28px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 15px;
+            color: var(--primary);
         }
 
-        .pulse-bg {
-            animation: bg-pulse 3s infinite;
+        .btn-charge {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 18px;
+            font-weight: 900;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.15s;
+            width: 100%;
         }
-        @keyframes bg-pulse {
-            0% { transform: scale(1); opacity: 0.1; }
-            50% { transform: scale(1.3); opacity: 0.2; }
-            100% { transform: scale(1); opacity: 0.1; }
-        }
-        
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .btn-charge:active { transform: scale(0.97); }
+        .btn-charge:disabled { opacity: 0.4; }
 
-        /* Estilos del Ticket */
+        /* ========== METHOD SELECTION ========== */
+        .method-card {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: border-color 0.2s, transform 0.15s;
+        }
+        .method-card:active { transform: scale(0.97); }
+        .method-card .method-icon {
+            width: 56px; height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        .method-card .method-text { font-weight: 900; font-size: 18px; text-transform: uppercase; }
+
+        /* ========== CONTACTLESS CARD ========== */
+        .contactless-card {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .contactless-card .dots {
+            position: absolute; top: 16px; left: 20px;
+            display: flex; gap: 6px;
+        }
+        .contactless-card .dots span {
+            width: 10px; height: 10px; border-radius: 50%;
+        }
+        .contactless-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; }
+        .contactless-amount { font-size: 48px; font-weight: 900; color: var(--primary); margin: 8px 0 30px; }
+
+        .nfc-circle {
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            border: 3px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 24px;
+        }
+        .nfc-circle .material-icons-round { font-size: 48px; color: var(--primary); }
+
+        @keyframes nfc-pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+        .nfc-pulse-ring {
+            position: absolute;
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            animation: nfc-pulse 2s infinite;
+        }
+        .nfc-pulse-ring:nth-child(2) { animation-delay: 0.6s; }
+
+        .contactless-instruction { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: var(--primary); }
+        .btn-cancel-op {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none; border-radius: 50px;
+            padding: 12px 28px;
+            font-weight: 800; font-size: 13px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+            margin-top: 28px;
+        }
+
+        /* ========== CASH PAYMENT ========== */
+        .cash-summary-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+        .cash-pill {
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 800;
+        }
+        .cash-pill.received { background: var(--primary-light); color: var(--primary); }
+        .cash-pill.change { background: var(--accent-green); color: var(--accent-green-dark); }
+        .cash-pill .amount { font-size: 28px; font-weight: 900; }
+        .cash-pill .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .quick-amounts {
+            display: flex; gap: 10px;
+        }
+        .quick-btn {
+            flex: 1;
+            background: var(--card);
+            border-radius: 16px;
+            border: 2px solid #e2e8f0;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--primary);
+            transition: transform 0.1s;
+        }
+        .quick-btn:active { transform: scale(0.95); }
+        .quick-btn .q-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .numpad button {
+            background: var(--card);
+            border: none;
+            border-radius: 16px;
+            padding: 16px;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-dark);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.1s, background 0.1s;
+        }
+        .numpad button:active { transform: scale(0.95); background: #f1f5f9; }
+        .numpad .key-delete { background: var(--accent-red); color: var(--accent-red-dark); }
+        .numpad .key-comma { background: var(--accent-yellow); color: #92400e; }
+
+        /* ========== SUCCESS ========== */
+        .success-bg {
+            background: var(--accent-green) !important;
+            transition: background 0.4s;
+        }
+
+        /* ========== TICKET ========== */
         .receipt-paper {
             background: #ffffff;
             color: #1a1a1a;
-            font-family: 'Courier New', Courier, monospace;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-family: 'Courier Prime', 'Courier New', monospace;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             position: relative;
             transform-origin: top center;
+            border-radius: 4px 4px 0 0;
         }
         .receipt-paper::after {
             content: "";
             position: absolute;
-            bottom: -10px;
+            bottom: -12px;
             left: 0;
             width: 100%;
-            height: 10px;
-            background: linear-gradient(-45deg, transparent 5px, #ffffff 5px), linear-gradient(45deg, transparent 5px, #ffffff 5px);
-            background-size: 10px 10px;
+            height: 12px;
+            background: linear-gradient(-45deg, transparent 6px, #ffffff 6px), linear-gradient(45deg, transparent 6px, #ffffff 6px);
+            background-size: 12px 12px;
         }
 
-        /* Animación de Impresión */
         @keyframes print-slide {
             0% { transform: translateY(-110%); }
             100% { transform: translateY(0); }
         }
-        .printing-anim {
-            animation: print-slide 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
+        .printing-anim { animation: print-slide 2.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
 
         .printer-slot {
-            width: 320px;
-            height: 12px;
-            background: #111;
+            width: 300px;
+            height: 14px;
+            background: #222;
             border-radius: 10px;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,1);
+            box-shadow: inset 0 2px 6px rgba(0,0,0,1);
             position: relative;
             z-index: 60;
             margin-bottom: -6px;
         }
+
+        .ticket-action-btns {
+            display: flex; gap: 12px; margin-top: 20px;
+        }
+        .ticket-action-btns button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 800;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-finish { background: var(--primary); color: white; }
+        .btn-save { background: #25d366; color: white; }
+
+        /* ========== TICKETS HISTORY ========== */
+        .ticket-history-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .ticket-history-card:active { transform: scale(0.98); }
+        .ticket-history-card .date { font-size: 11px; color: var(--text-muted); font-weight: 800; }
+        .ticket-history-card .trans { font-size: 13px; font-weight: 900; margin: 4px 0; }
+        .ticket-history-card .method { font-size: 10px; text-transform: uppercase; color: var(--primary); font-weight: 800; background: var(--primary-light); padding: 2px 6px; border-radius: 4px; display: inline-block; }
+        .ticket-history-card .total { font-size: 20px; font-weight: 900; color: var(--primary); text-align: right; }
+        
+        /* ========== CATEGORY CHIPS ========== */
+        .category-bar {
+            display: flex;
+            gap: 8px;
+            padding: 8px 20px;
+            overflow-x: auto;
+            flex-shrink: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .category-bar::-webkit-scrollbar { display: none; }
+        .category-chip {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 13px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, transform 0.1s;
+            background: var(--card);
+            color: var(--text-muted);
+            box-shadow: var(--shadow);
+        }
+        .category-chip:active { transform: scale(0.95); }
+        .category-chip.active {
+            background: var(--primary);
+            color: white;
+        }
     </style>
 </head>
-<body class="text-white flex flex-col h-full">
 
-    <!-- PANTALLA DE SELECCIÓN -->
-    <div id="view-menu" class="flex-1 flex flex-col p-4 overflow-hidden">
-        <header class="flex justify-between items-center mb-4">
-            <div>
-                <h1 class="text-xl font-black italic text-blue-500 tracking-tighter uppercase">BankPlay</h1>
-                <p class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Restaurante & Café</p>
-            </div>
-            <button onclick="resetCart()" class="text-[9px] font-bold bg-slate-800 px-3 py-2 rounded-full text-slate-400 active:bg-red-900/40">LIMPIAR TODO</button>
-        </header>
+<body>
 
-        <!-- Listado de Productos -->
-        <div class="grid grid-cols-3 gap-2 flex-[3] overflow-y-auto custom-scroll pb-6 pr-1">
-            <button onclick="add('Hamburguesa', 6.50)" class="product-card border-orange-500/20">
-                <span class="text-xl mb-1">🍔</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Hamburguesa</span>
-                <span class="text-sm font-black text-blue-400">6,50€</span>
+    <!-- ============ VIEW: MENU ============ -->
+    <div id="view-menu" class="view active">
+        <div class="app-header">
+            <h1 style="font-size: 18px;">🏪 Restaurante "Casa Adrián"</h1>
+            <div class="balance-pill" id="header-total">0,00€</div>
+        </div>
+        <div class="category-bar" id="category-bar">
+            <button class="category-chip active" onclick="filterCategory('Todo')">✨ Todo</button>
+            <button class="category-chip" onclick="filterCategory('Comida')">🍔 Comida</button>
+            <button class="category-chip" onclick="filterCategory('Bebidas')">🥤 Bebidas</button>
+            <button class="category-chip" onclick="filterCategory('Postres')">🍰 Postres</button>
+            <button class="category-chip" onclick="filterCategory('Frutas')">🍎 Frutas</button>
+        </div>
+        <div id="product-grid" class="product-grid custom-scroll">
+            <div style="grid-column: span 2; text-align:center; padding: 40px; color: var(--text-muted); font-weight:700;">Cargando productos...</div>
+        </div>
+        <button id="fab-order" class="fab-order" style="display:none" onclick="navigate('order')">
+            <span class="material-icons-round">shopping_bag</span>
+            Ver Pedido
+            <span class="badge" id="fab-count">0</span>
+        </button>
+    </div>
+
+    <!-- ============ VIEW: ORDER ============ -->
+    <div id="view-order" class="view">
+        <div class="app-header">
+            <button onclick="navigate('menu')" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;color:var(--primary);font-weight:800;font-size:14px;">
+                <span class="material-icons-round">arrow_back</span> Menú
             </button>
-            <button onclick="add('Paella', 12.00)" class="product-card border-yellow-500/20">
-                <span class="text-xl mb-1">🥘</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Paella</span>
-                <span class="text-sm font-black text-blue-400">12,00€</span>
-            </button>
-            <button onclick="add('Gambas', 9.50)" class="product-card border-orange-400/20">
-                <span class="text-xl mb-1">🦐</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Gambas</span>
-                <span class="text-sm font-black text-blue-400">9,50€</span>
-            </button>
-            <button onclick="add('Huevo Frito', 4.50)" class="product-card border-yellow-300/20">
-                <span class="text-xl mb-1">🍳</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Huevo Frito</span>
-                <span class="text-sm font-black text-blue-400">4,50€</span>
-            </button>
-            <button onclick="add('Pescado', 11.00)" class="product-card border-blue-300/20">
-                <span class="text-xl mb-1">🐟</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Pescado</span>
-                <span class="text-sm font-black text-blue-400">11,00€</span>
-            </button>
-            <button onclick="add('Pulpo', 14.50)" class="product-card border-purple-500/20">
-                <span class="text-xl mb-1">🐙</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Pulpo</span>
-                <span class="text-sm font-black text-blue-400">14,50€</span>
-            </button>
-            <button onclick="add('Chuletón', 22.00)" class="product-card border-red-500/20">
-                <span class="text-xl mb-1">🥩</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Chuletón</span>
-                <span class="text-sm font-black text-blue-400">22,00€</span>
-            </button>
-            <button onclick="add('Pizza', 8.50)" class="product-card border-red-400/20">
-                <span class="text-xl mb-1">🍕</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Pizza</span>
-                <span class="text-sm font-black text-blue-400">8,50€</span>
-            </button>
-            <button onclick="add('Papas Fritas', 3.00)" class="product-card border-yellow-600/20">
-                <span class="text-xl mb-1">🍟</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Papas</span>
-                <span class="text-sm font-black text-blue-400">3,00€</span>
-            </button>
-            <button onclick="add('Refresco', 2.20)" class="product-card border-blue-500/20">
-                <span class="text-xl mb-1">🥤</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Refresco</span>
-                <span class="text-sm font-black text-blue-400">2,20€</span>
-            </button>
-            <button onclick="add('Cerveza', 2.50)" class="product-card border-amber-500/20">
-                <span class="text-xl mb-1">🍺</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Cerveza</span>
-                <span class="text-sm font-black text-blue-400">2,50€</span>
-            </button>
-            <button onclick="add('Café', 1.20)" class="product-card border-amber-800/20">
-                <span class="text-xl mb-1">☕</span>
-                <span class="text-[8px] font-bold uppercase text-slate-400 truncate w-full text-center">Café</span>
-                <span class="text-sm font-black text-blue-400">1,20€</span>
+            <div class="balance-pill" id="order-total-pill">0,00€</div>
+        </div>
+        <h2 style="padding: 4px 20px 0; font-size:20px; font-weight:900;">Pedido Actual</h2>
+        <div id="order-list" class="custom-scroll" style="flex:1; overflow-y:auto; padding: 12px 20px; display:flex; flex-direction:column; gap:12px;"></div>
+        <div style="padding: 16px 20px;">
+            <button id="btn-charge" class="btn-charge" onclick="goToMethodSelection()" disabled>
+                <span class="material-icons-round">point_of_sale</span>
+                COBRAR
             </button>
         </div>
+    </div>
 
-        <!-- VISOR DE PRODUCTOS -->
-        <div id="cart-preview" class="flex-1 bg-slate-900/50 rounded-2xl p-3 my-2 border border-slate-800 overflow-y-auto custom-scroll">
-            <div class="flex justify-between items-center mb-2 border-b border-slate-800 pb-1">
-                <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Resumen del Pedido</p>
-                <p class="text-[8px] font-black text-blue-500 uppercase">Pulsa ❌ para corregir</p>
-            </div>
-            <div id="cart-list" class="space-y-1 text-[11px]">
-                <p class="text-slate-600 italic text-center py-2">Selecciona productos...</p>
-            </div>
+    <!-- ============ VIEW: METHOD ============ -->
+    <div id="view-method" class="view">
+        <div class="app-header">
+            <button onclick="navigate('order')" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;color:var(--primary);font-weight:800;font-size:14px;">
+                <span class="material-icons-round">arrow_back</span> Pedido
+            </button>
         </div>
-
-        <!-- Footer Total -->
-        <div class="bg-slate-900 p-6 -mx-4 border-t border-slate-800 rounded-t-[2rem]">
-            <div class="flex justify-between items-center">
-                <div>
-                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Total a Pagar</p>
-                    <p id="total-val" class="text-4xl font-black tabular-nums">0,00€</p>
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 20px; gap: 16px;">
+            <p style="font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:3px; color:var(--text-muted);">Total a cobrar</p>
+            <p id="method-amt" style="font-size:52px; font-weight:900; color:var(--primary); margin-bottom:20px;">0,00€</p>
+            <div style="width:100%; max-width:360px; display:flex; flex-direction:column; gap:14px;">
+                <div class="method-card" onclick="goToCash()">
+                    <div class="method-icon" style="background: var(--accent-green);">💵</div>
+                    <div>
+                        <div class="method-text">Efectivo</div>
+                        <div style="font-size:12px; color:var(--text-muted); font-weight:600;">Pago con monedas y billetes</div>
+                    </div>
                 </div>
-                <button id="pay-btn" onclick="goToPay()" disabled class="bg-blue-600 disabled:bg-slate-800 px-8 py-4 rounded-2xl font-black uppercase text-sm active:scale-95 shadow-lg shadow-blue-900/20 transition-colors">
-                    COBRAR
+                <div class="method-card" onclick="goToCard()">
+                    <div class="method-icon" style="background: var(--primary-light);">💳</div>
+                    <div>
+                        <div class="method-text">Tarjeta</div>
+                        <div style="font-size:12px; color:var(--text-muted); font-weight:600;">Pago contactless NFC</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ VIEW: CASH ============ -->
+    <div id="view-cash" class="view">
+        <div class="app-header">
+            <button onclick="navigate('method')" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;color:var(--primary);font-weight:800;font-size:14px;">
+                <span class="material-icons-round">arrow_back</span> Atrás
+            </button>
+            <span style="font-size:11px; font-weight:800; color:var(--primary); background:var(--primary-light); padding:6px 14px; border-radius:50px; text-transform:uppercase;">💵 Efectivo</span>
+        </div>
+
+        <div style="flex:1; overflow-y:auto; padding:12px 20px; display:flex; flex-direction:column; gap:12px;">
+            <!-- Total -->
+            <div class="cash-summary-card" style="text-align:center;">
+                <p style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Total a Cobrar</p>
+                <p id="cash-total" style="font-size:40px; font-weight:900; color:var(--primary);">0,00€</p>
+            </div>
+
+            <!-- Received / Change pills -->
+            <div class="cash-pill received">
+                <div>
+                    <div class="label">Dinero Recibido</div>
+                    <div class="amount" id="cash-received">0,00€</div>
+                </div>
+                <span style="font-size:28px;">💰</span>
+            </div>
+            <div class="cash-pill change" id="change-pill" style="display:none;">
+                <div>
+                    <div class="label">Tu Cambio</div>
+                    <div class="amount" id="cash-change-val">0,00€</div>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:28px;">🐷</span>
+                    <div style="font-size:10px; font-weight:700;">¡Devuelve las monedas!</div>
+                </div>
+            </div>
+
+            <!-- Quick amounts -->
+            <div class="quick-amounts">
+                <button class="quick-btn" onclick="cashQuick(500)"><div>5€</div><div class="q-label">Moneda</div></button>
+                <button class="quick-btn" onclick="cashQuick(1000)"><div>10€</div><div class="q-label">Billete</div></button>
+                <button class="quick-btn" onclick="cashQuick(2000)"><div>20€</div><div class="q-label">Billete</div></button>
+                <button class="quick-btn" onclick="cashQuick(5000)"><div>50€</div><div class="q-label">Billete</div></button>
+            </div>
+
+            <!-- Numpad -->
+            <div class="numpad">
+                <button onclick="cashPress('1')">1</button>
+                <button onclick="cashPress('2')">2</button>
+                <button onclick="cashPress('3')">3</button>
+                <button onclick="cashPress('4')">4</button>
+                <button onclick="cashPress('5')">5</button>
+                <button onclick="cashPress('6')">6</button>
+                <button onclick="cashPress('7')">7</button>
+                <button onclick="cashPress('8')">8</button>
+                <button onclick="cashPress('9')">9</button>
+                <button class="key-comma" onclick="cashPress('.')">·</button>
+                <button onclick="cashPress('0')">0</button>
+                <button class="key-delete" onclick="cashClear()"><span class="material-icons-round">backspace</span></button>
+            </div>
+
+            <button id="cash-pay-btn" class="btn-charge" onclick="processPayment('EFECTIVO')" disabled>
+                <span class="material-icons-round">check_circle</span>
+                COBRADO
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ VIEW: CARD ============ -->
+    <div id="view-card" class="view" onclick="handleScreenTap(event)">
+        <div class="app-header" style="z-index:10; position:relative;">
+            <button onclick="event.stopPropagation(); navigate('method')" style="background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;color:var(--primary);font-weight:800;font-size:14px;">
+                <span class="material-icons-round">arrow_back</span> Atrás
+            </button>
+        </div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:20px;">
+            <div class="contactless-card" style="width:100%; max-width:360px;">
+                <div class="dots">
+                    <span style="background:#ef4444;"></span>
+                    <span style="background:#facc15;"></span>
+                    <span style="background:#22c55e;"></span>
+                </div>
+                <div style="position:absolute; top:16px; right:20px;">
+                    <span class="material-icons-round" style="color:var(--primary); font-size:22px;">contactless</span>
+                </div>
+                <div class="contactless-label" style="margin-top:24px;">Total a pagar</div>
+                <div class="contactless-amount" id="card-pay-amt">0,00€</div>
+
+                <div class="nfc-circle">
+                    <div class="nfc-pulse-ring"></div>
+                    <div class="nfc-pulse-ring"></div>
+                    <span class="material-icons-round">contactless</span>
+                </div>
+
+                <div class="contactless-instruction">Acerca tu tarjeta</div>
+                <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">(Toca la pantalla para simular)</p>
+
+                <button class="btn-cancel-op" onclick="event.stopPropagation(); navigate('method')">
+                    <span class="material-icons-round" style="font-size:18px;">close</span>
+                    Cancelar Operación
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- PANTALLA DE PAGO -->
-    <div id="view-pay" class="hidden flex-1 flex flex-col bg-slate-950 p-6 relative">
-        <div id="pay-interactive-zone" class="absolute inset-0 z-0" onpointerdown="handleScreenTap()"></div>
-        
-        <div id="pay-header" class="flex justify-between items-center z-10 relative pointer-events-none">
-            <button onclick="cancelPay()" class="text-slate-600 font-bold text-xs uppercase italic pointer-events-auto">Cancelar</button>
-            <div class="flex items-center gap-2 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
-                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                <span class="text-[8px] font-black text-blue-400 uppercase tracking-widest">Lector Activo</span>
+    <!-- ============ VIEW: SUCCESS ============ -->
+    <div id="view-success" class="view" style="align-items:center; justify-content:center; padding:20px;">
+        <div id="success-content" style="text-align:center;">
+            <div style="width:80px; height:80px; background:white; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; box-shadow:var(--shadow-lg);">
+                <span class="material-icons-round" style="font-size:48px; color:var(--accent-green-dark);">check</span>
             </div>
-        </div>
-
-        <div id="waiting-area" class="flex-1 flex flex-col items-center justify-center text-center z-10 relative pointer-events-none">
-            <div class="absolute w-72 h-72 bg-blue-500 rounded-full blur-[90px] pulse-bg pointer-events-none opacity-20"></div>
-            <p class="text-blue-500 text-xs font-black uppercase tracking-[0.4em] mb-4">Pago Contactless</p>
-            <h2 id="pay-amt" class="text-7xl font-black italic mb-12 tracking-tighter text-white">0,00€</h2>
-            
-            <div class="w-full flex items-center justify-center mb-8">
-                <div class="relative w-40 h-40 flex items-center justify-center border-4 border-blue-500/40 rounded-full">
-                    <svg width="80" height="80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-blue-500">
-                        <path class="wave-anim wave-4" d="M75 15c15 15 23 35 23 50s-8 35-23 50" stroke="currentColor" stroke-width="8" stroke-linecap="round" transform="translate(-10, -15)"/>
-                        <path class="wave-anim wave-3" d="M60 25c10 10 15 25 15 40s-5 30-15 40" stroke="currentColor" stroke-width="8" stroke-linecap="round" transform="translate(-10, -15)"/>
-                        <path class="wave-anim wave-2" d="M45 35c7 7 10 17 10 30s-3 23-10 30" stroke="currentColor" stroke-width="8" stroke-linecap="round" transform="translate(-10, -15)"/>
-                        <path class="wave-anim wave-1" d="M30 45c3 3 5 10 5 20s-2 17-5 20" stroke="currentColor" stroke-width="8" stroke-linecap="round" transform="translate(-10, -15)"/>
-                    </svg>
-                </div>
-            </div>
-            <p class="text-xl font-black italic uppercase text-white tracking-widest animate-pulse">Acerque su Tarjeta</p>
-        </div>
-
-        <!-- ÉXITO Y TICKET -->
-        <div id="success-area" class="hidden flex-1 flex flex-col items-center justify-center z-20 relative pt-10 pointer-events-none">
-            <div id="success-confirmation" class="text-center mb-6">
-                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                </div>
-                <h3 class="text-3xl font-black italic uppercase">¡PAGO CORRECTO!</h3>
-            </div>
-
-            <button id="print-btn" onclick="startPrinting()" class="bg-white text-slate-900 px-8 py-4 rounded-2xl font-black uppercase text-sm shadow-xl flex items-center gap-3 active:scale-95 transition-all pointer-events-auto">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                </svg>
+            <h2 style="font-size:28px; font-weight:900; text-transform:uppercase; margin-bottom:24px;">¡Pago Correcto!</h2>
+            <button id="print-btn" onclick="startPrinting()" style="background:white; color:var(--text-dark); border:none; border-radius:var(--radius); padding:16px 32px; font-weight:800; font-size:14px; box-shadow:var(--shadow-lg); cursor:pointer; display:flex; align-items:center; gap:10px; margin:0 auto 12px;">
+                <span class="material-icons-round">print</span>
                 Imprimir Ticket
             </button>
-            
-            <!-- Contenedor Animación Impresión -->
-            <div id="ticket-modal" class="hidden fixed inset-0 z-50 flex flex-col items-center pt-10 bg-black/80 backdrop-blur-sm pointer-events-auto" onclick="closeTicket()">
-                <div class="printer-slot"></div>
-                <div class="overflow-hidden w-full flex justify-center">
-                    <div id="ticket-paper" class="receipt-paper w-full max-w-xs p-8 rounded-sm text-[11px] mb-20" onclick="event.stopPropagation()">
-                        <div class="text-center border-b border-slate-300 pb-4 mb-4">
-                            <p class="font-black text-lg">BANKPLAY S.L.</p>
-                            <p>C/ Comercio, 123</p>
-                            <p id="ticket-date" class="mt-2 opacity-70">--/--/-- --:--</p>
-                        </div>
-                        <div id="ticket-items" class="space-y-1 mb-4"></div>
-                        <div class="border-t-2 border-slate-900 pt-3 flex justify-between font-black text-lg italic uppercase">
-                            <span>TOTAL</span>
-                            <span id="ticket-total">0,00€</span>
-                        </div>
-                        <div class="mt-6 text-center opacity-60">
-                            <p>***** COPIA CLIENTE *****</p>
-                            <p class="mt-2 font-bold italic uppercase">¡Gracias por su visita!</p>
-                        </div>
-                        <button onclick="closeTicket()" class="mt-8 w-full bg-slate-100 py-3 font-bold uppercase tracking-widest text-[9px] rounded-lg active:bg-slate-200">FINALIZAR</button>
-                    </div>
+            <button onclick="closeTicketAction()" style="background:var(--primary); color:white; border:none; border-radius:var(--radius); padding:14px 28px; font-weight:800; font-size:14px; box-shadow:var(--shadow-lg); cursor:pointer; display:flex; align-items:center; gap:10px; margin:0 auto; width:fit-content;">
+                <span class="material-icons-round">check</span>
+                Finalizar Compra
+            </button>
+        </div>
+    </div>
+
+    <!-- ============ TICKET MODAL ============ -->
+    <div id="ticket-modal" style="display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.75); backdrop-filter:blur(4px); flex-direction:column; align-items:center; padding-top:40px;" onclick="closeTicketAction()">
+        <div class="printer-slot"></div>
+        <div style="overflow:hidden; width:100%; display:flex; justify-content:center;">
+            <div id="ticket-paper" class="receipt-paper" style="width:calc(100% - 60px); max-width:300px; padding:28px 24px; margin-bottom:40px;" onclick="event.stopPropagation()">
+                <div style="text-align:center; border-bottom:2px dashed #ccc; padding-bottom:16px; margin-bottom:16px;">
+                    <p style="font-size:16px; font-weight:700; letter-spacing:1px;">RESTAURANTE<br>"CASA ADRIÁN"</p>
+                    <p style="font-size:11px; margin-top:4px;">Santa Cruz de Tenerife</p>
+                    <p style="font-size:11px; margin-top:2px;">CIF: B12345678</p>
+                    <p id="ticket-date" style="font-size:11px; margin-top:6px; opacity:0.7;">--/--/-- --:--</p>
+                    <p id="ticket-trans" style="font-size:11px; opacity:0.7;"></p>
+                </div>
+                <div id="ticket-items" style="margin-bottom:16px;"></div>
+                <div style="border-top:2px solid #1a1a1a; padding-top:12px; display:flex; justify-content:space-between; font-weight:700; font-size:18px; text-transform:uppercase;">
+                    <span>TOTAL</span>
+                    <span id="ticket-total">0,00€</span>
+                </div>
+                <div style="margin-top:12px; padding-top:12px; border-top:1px dashed #ccc; text-align:center; font-size:11px;">
+                    <p id="ticket-method" style="font-weight:700;">PAGO: TARJETA</p>
+                    <p id="ticket-ref" style="opacity:0.7; margin-top:4px;"></p>
+                </div>
+                <div style="margin-top:20px; text-align:center; font-size:11px; opacity:0.6;">
+                    <p>***** COPIA PARA JUGAR *****</p>
+                    <p style="margin-top:4px; font-weight:700; text-transform:uppercase;">¡Gracias por tu compra!</p>
+                </div>
+                <div class="ticket-action-btns" id="ticket-btns" style="grid-template-columns: 1fr;">
+                    <button class="btn-save" onclick="event.stopPropagation(); shareWhatsApp();" style="justify-content:center;">
+                        <span style="font-size:18px;">📲</span>
+                        Compartir por WhatsApp
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ============ VIEW: TICKETS (HISTORIAL) ============ -->
+    <div id="view-tickets" class="view">
+        <div class="app-header">
+            <h1>🧾 Mis Tickets</h1>
+            <button onclick="clearTicketsHistory()" style="background:var(--primary-light); color:var(--primary); border:none; padding:6px 14px; border-radius:50px; font-weight:800; font-size:11px; cursor:pointer;">
+                Borrar Historial
+            </button>
+        </div>
+        <div id="tickets-list" class="custom-scroll" style="flex:1; overflow-y:auto; padding: 20px; display:flex; flex-direction:column; gap:12px;">
+            <!-- Tickets rendering spot -->
+        </div>
+    </div>
+
+    <!-- ============ BOTTOM NAV ============ -->
+    <nav class="bottom-nav" id="main-nav">
+        <button class="nav-item active" id="nav-menu" onclick="navigate('menu')">
+            <span class="material-icons-round">storefront</span>
+            Tienda
+        </button>
+        <button class="nav-item" id="nav-order" onclick="navigate('order')">
+            <span class="material-icons-round">shopping_cart</span>
+            Pedido
+        </button>
+        <button class="nav-item" id="nav-tickets" onclick="navigate('tickets')">
+            <span class="material-icons-round">receipt_long</span>
+            Tickets
+        </button>
+    </nav>
+
     <script>
-        let total = 0;
+        // ========== STATE ==========
+        let totalOrder = 0;
         let cart = [];
         let isPaid = false;
+        let paymentMethod = 'TARJETA';
+        let cashGivenString = '';
+        let currentView = 'menu';
+        let allProducts = [];
+        let activeCategory = 'Todo';
 
-        function add(name, price) {
-            total += price;
-            cart.push({name, price});
-            updateUI();
+        let isHistoricalView = false;
+        let backupCart = [];
+        let backupTotal = 0;
+        let backupMethod = '';
+
+        // ========== SERVICE WORKER ==========
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+        }
+
+        // ========== PRODUCTS ==========
+        const PRODUCTS_FALLBACK = [
+            { id:1, name:"Hamburguesa", price:6.50, icon:"🍔", category:"Comida" },
+            { id:2, name:"Paella", price:12.00, icon:"🥘", category:"Comida" },
+            { id:3, name:"Gambas", price:9.50, icon:"🦐", category:"Comida" },
+            { id:4, name:"Huevo Frito", price:4.50, icon:"🍳", category:"Comida" },
+            { id:5, name:"Pescado", price:11.00, icon:"🐟", category:"Comida" },
+            { id:6, name:"Pulpo", price:14.50, icon:"🐙", category:"Comida" },
+            { id:7, name:"Chuletón", price:22.00, icon:"🥩", category:"Comida" },
+            { id:8, name:"Pizza", price:8.50, icon:"🍕", category:"Comida" },
+            { id:9, name:"Papas Fritas", price:3.00, icon:"🍟", category:"Comida" },
+            { id:10, name:"Tortilla", price:5.00, icon:"🫓", category:"Comida" },
+            { id:11, name:"Perritos", price:4.00, icon:"🌭", category:"Comida" },
+            { id:12, name:"Nuggets", price:5.50, icon:"🧽", category:"Comida" },
+            { id:13, name:"Camarones", price:10.00, icon:"🍤", category:"Comida" },
+            { id:14, name:"Lapas", price:8.00, icon:"🐚", category:"Comida" },
+            { id:15, name:"Ensalada", price:6.00, icon:"🥗", category:"Comida" },
+            { id:17, name:"Arroz", price:7.50, icon:"🍚", category:"Comida" },
+            { id:18, name:"Costillas con Papas", price:13.00, icon:"🍖", category:"Comida" },
+            { id:19, name:"Muslitos de Pollo", price:6.50, icon:"🍗", category:"Comida" },
+            { id:20, name:"Creps", price:5.00, icon:"🥞", category:"Comida" },
+            { id:21, name:"Tacos", price:7.00, icon:"🌮", category:"Comida" },
+            { id:22, name:"Sopa", price:4.50, icon:"🍲", category:"Comida" },
+            { id:23, name:"Bocadillo", price:5.00, icon:"🥖", category:"Comida" },
+            { id:24, name:"Sushi", price:12.50, icon:"🍣", category:"Comida" },
+            { id:25, name:"Kebab", price:6.00, icon:"🥙", category:"Comida" },
+            { id:26, name:"Refresco", price:2.20, icon:"🥤", category:"Bebidas" },
+            { id:27, name:"Cerveza", price:2.50, icon:"🍺", category:"Bebidas" },
+            { id:28, name:"Café", price:1.20, icon:"☕", category:"Bebidas" },
+            { id:29, name:"Zumo", price:2.80, icon:"🧃", category:"Bebidas" },
+            { id:30, name:"Agua", price:1.00, icon:"💧", category:"Bebidas" },
+            { id:31, name:"Vino", price:3.50, icon:"🍷", category:"Bebidas" },
+            { id:32, name:"Barraquito", price:2.50, icon:"🥃", category:"Bebidas" },
+            { id:33, name:"Chocolate", price:2.00, icon:"🍫", category:"Bebidas" },
+            { id:34, name:"Batido", price:3.00, icon:"🥛", category:"Bebidas" },
+            { id:35, name:"Helado", price:3.50, icon:"🍦", category:"Postres" },
+            { id:36, name:"Tarta", price:4.00, icon:"🎂", category:"Postres" },
+            { id:37, name:"Flan", price:3.00, icon:"🍮", category:"Postres" },
+            { id:38, name:"Galletas", price:2.50, icon:"🍪", category:"Postres" },
+            { id:39, name:"Churros", price:3.50, icon:"🥖", category:"Postres" },
+            { id:40, name:"Donuts", price:2.00, icon:"🍩", category:"Postres" },
+            { id:41, name:"Caramelos", price:1.50, icon:"🍬", category:"Postres" },
+            { id:42, name:"Manzana", price:1.00, icon:"🍎", category:"Frutas" },
+            { id:43, name:"Plátano", price:0.80, icon:"🍌", category:"Frutas" },
+            { id:44, name:"Naranja", price:1.00, icon:"🍊", category:"Frutas" },
+            { id:45, name:"Fresa", price:2.00, icon:"🍓", category:"Frutas" },
+            { id:46, name:"Sandía", price:2.50, icon:"🍉", category:"Frutas" },
+            { id:47, name:"Uvas", price:1.50, icon:"🍇", category:"Frutas" },
+            { id:48, name:"Piña", price:2.00, icon:"🍍", category:"Frutas" },
+            { id:49, name:"Melocotón", price:1.50, icon:"🍑", category:"Frutas" },
+            { id:50, name:"Cereza", price:2.50, icon:"🍒", category:"Frutas" },
+            { id:51, name:"Kiwi", price:1.20, icon:"🥝", category:"Frutas" }
+        ];
+
+        async function loadProducts() {
+            try {
+                const r = await fetch('products.json');
+                allProducts = await r.json();
+            } catch (e) {
+                allProducts = PRODUCTS_FALLBACK;
+            }
+            renderProducts(allProducts);
+        }
+
+        function filterCategory(cat) {
+            activeCategory = cat;
+            // Update chip UI
+            document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            // Filter
+            const filtered = cat === 'Todo' ? allProducts : allProducts.filter(p => p.category === cat);
+            renderProducts(filtered);
+        }
+
+        function renderProducts(products) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+            products.forEach(p => {
+                const btn = document.createElement('button');
+                btn.className = 'product-card';
+                btn.onclick = () => addToCart(p.name, p.price, p.icon);
+                btn.innerHTML = `
+                    <span class="emoji">${p.icon}</span>
+                    <span class="name">${p.name}</span>
+                    <span class="price">${fmt(p.price)}</span>
+                `;
+                grid.appendChild(btn);
+            });
+        }
+        loadProducts();
+
+        // ========== CART LOGIC ==========
+        function fmt(v) { return v.toFixed(2).replace('.', ',') + '€'; }
+
+        function addToCart(name, price, icon) {
+            cart.push({ name, price, icon });
+            totalOrder += price;
+            updateAll();
             if (navigator.vibrate) navigator.vibrate(10);
         }
 
-        function removeOne(name) {
-            const index = cart.findLastIndex(item => item.name === name);
-            if (index !== -1) {
-                total -= cart[index].price;
-                cart.splice(index, 1);
-                updateUI();
+        function removeFromCart(name) {
+            const idx = cart.findLastIndex(i => i.name === name);
+            if (idx !== -1) {
+                totalOrder -= cart[idx].price;
+                cart.splice(idx, 1);
+                if (totalOrder < 0) totalOrder = 0;
+                updateAll();
                 if (navigator.vibrate) navigator.vibrate(5);
             }
         }
 
-        function updateUI() {
-            if (total < 0) total = 0;
-            document.getElementById('total-val').innerText = total.toFixed(2).replace('.', ',') + '€';
-            document.getElementById('pay-btn').disabled = cart.length === 0;
+        function addOne(name) {
+            const item = cart.find(i => i.name === name);
+            if (item) addToCart(item.name, item.price, item.icon);
+        }
 
-            const list = document.getElementById('cart-list');
+        function updateAll() {
+            // Header pill
+            document.getElementById('header-total').innerText = fmt(totalOrder);
+            document.getElementById('order-total-pill').innerText = fmt(totalOrder);
+
+            // FAB
+            const fab = document.getElementById('fab-order');
+            const cartCount = cart.length;
+            fab.style.display = cartCount > 0 ? 'flex' : 'none';
+            document.getElementById('fab-count').innerText = cartCount;
+
+            // Charge btn
+            document.getElementById('btn-charge').disabled = cartCount === 0;
+
+            // Order list
+            renderOrderList();
+        }
+
+        function renderOrderList() {
+            const list = document.getElementById('order-list');
             if (cart.length === 0) {
-                list.innerHTML = '<p class="text-slate-600 italic text-center py-2">Selecciona productos...</p>';
+                list.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted); font-weight:700;">Tu pedido está vacío 🛒</div>';
                 return;
             }
-
             const counts = {};
-            cart.forEach(item => counts[item.name] = (counts[item.name] || 0) + 1);
-            
-            list.innerHTML = '';
-            Object.keys(counts).forEach(name => {
-                const itemData = cart.find(i => i.name === name);
-                const row = document.createElement('div');
-                row.className = 'flex justify-between items-center bg-slate-800/50 p-2 rounded-lg border border-slate-700/50';
-                row.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <button onclick="removeOne('${name}')" class="bg-red-500/20 text-red-500 w-5 h-5 rounded flex items-center justify-center text-[8px] border border-red-500/30 active:scale-90">❌</button>
-                        <span class="font-bold text-slate-300"><span class="text-blue-500">${counts[name]}x</span> ${name.toUpperCase()}</span>
-                    </div>
-                    <span class="text-blue-400 font-black">${(itemData.price * counts[name]).toFixed(2)}€</span>
-                `;
-                list.appendChild(row);
+            cart.forEach(item => {
+                if (!counts[item.name]) counts[item.name] = { ...item, qty: 0 };
+                counts[item.name].qty++;
             });
-            
-            const visor = document.getElementById('cart-preview');
-            visor.scrollTop = visor.scrollHeight;
+
+            list.innerHTML = '';
+            Object.values(counts).forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'order-item';
+                div.innerHTML = `
+                    <div class="item-emoji">${item.icon}</div>
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">${fmt(item.price)} / ud.</div>
+                    </div>
+                    <div class="stepper">
+                        <button onclick="removeFromCart('${item.name}')">−</button>
+                        <span class="qty">${item.qty}</span>
+                        <button onclick="addOne('${item.name}')">+</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
         }
 
         function resetCart() {
-            total = 0;
+            totalOrder = 0;
             cart = [];
-            updateUI();
+            updateAll();
         }
 
-        function goToPay() {
+        // ========== NAVIGATION ==========
+        function navigate(viewName) {
+            currentView = viewName;
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            const el = document.getElementById('view-' + viewName);
+            if (el) el.classList.add('active');
+
+            // Nav highlight
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const navBtn = document.getElementById('nav-' + viewName);
+            if (navBtn) navBtn.classList.add('active');
+
+            // Show/hide nav
+            const hideNav = ['card', 'cash', 'success'].includes(viewName);
+            document.getElementById('main-nav').style.display = hideNav ? 'none' : 'flex';
+
+            // Hide FAB outside menu
+            const fab = document.getElementById('fab-order');
+            fab.style.display = (viewName === 'menu' && cart.length > 0) ? 'flex' : 'none';
+
+            // Success bg
+            document.body.classList.toggle('success-bg', viewName === 'success');
+
+            if (viewName === 'tickets') {
+                renderTicketsHistory();
+            }
+        }
+
+        function goToMethodSelection() {
+            document.getElementById('method-amt').innerText = fmt(totalOrder);
+            navigate('method');
+        }
+
+        function goToCash() {
+            paymentMethod = 'EFECTIVO';
+            cashGivenString = '';
+            document.getElementById('cash-total').innerText = fmt(totalOrder);
+            updateCashUI();
+            navigate('cash');
+        }
+
+        function goToCard() {
+            paymentMethod = 'TARJETA';
             isPaid = false;
-            document.getElementById('view-menu').classList.add('hidden');
-            document.getElementById('view-pay').classList.remove('hidden');
-            document.getElementById('pay-amt').innerText = total.toFixed(2).replace('.', ',') + '€';
-            document.getElementById('pay-header').classList.remove('hidden');
+            document.getElementById('card-pay-amt').innerText = fmt(totalOrder);
+            navigate('card');
+            startNFC();
         }
 
-        function cancelPay() {
-            document.getElementById('view-pay').classList.add('hidden');
-            document.getElementById('view-menu').classList.remove('hidden');
-            document.getElementById('waiting-area').classList.remove('hidden');
-            document.getElementById('success-area').classList.add('hidden');
-            document.getElementById('ticket-modal').classList.add('hidden');
-            document.body.classList.remove('success-screen');
-            document.getElementById('ticket-paper').classList.remove('printing-anim');
-            isPaid = false;
+        // ========== CASH LOGIC ==========
+        function updateCashUI() {
+            const given = parseFloat(cashGivenString || '0') / 100;
+            document.getElementById('cash-received').innerText = fmt(given);
+
+            const change = given - totalOrder;
+            const changePill = document.getElementById('change-pill');
+            if (given >= totalOrder && totalOrder > 0) {
+                changePill.style.display = 'flex';
+                document.getElementById('cash-change-val').innerText = fmt(change);
+                document.getElementById('cash-pay-btn').disabled = false;
+            } else {
+                changePill.style.display = 'none';
+                document.getElementById('cash-pay-btn').disabled = true;
+            }
         }
 
-        function handleScreenTap() {
-            if (!isPaid) processPayment();
+        function cashPress(num) {
+            if (num === '.') return;
+            if (cashGivenString.length < 8) cashGivenString += num;
+            updateCashUI();
         }
 
-        function processPayment() {
+        function cashClear() {
+            cashGivenString = cashGivenString.slice(0, -1);
+            updateCashUI();
+        }
+
+        function cashQuick(cents) {
+            cashGivenString = String(cents);
+            updateCashUI();
+        }
+
+        // ========== CARD LOGIC ==========
+        function startNFC() {
+            if ('NDEFReader' in window) {
+                try {
+                    const reader = new NDEFReader();
+                    reader.scan().then(() => {
+                        reader.onreading = () => { if (!isPaid) processPayment('TARJETA'); };
+                    }).catch(() => {});
+                } catch (e) {}
+            }
+        }
+
+        function handleScreenTap(e) {
+            if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+            if (!isPaid) processPayment('TARJETA');
+        }
+
+        // ========== PAYMENT ==========
+        function processPayment(method) {
             if (isPaid) return;
             isPaid = true;
+            paymentMethod = method;
 
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.frequency.value = 880; gain.gain.value = 0.05;
-            osc.start(); setTimeout(() => osc.stop(), 150);
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.frequency.value = 880; gain.gain.value = 0.05;
+                osc.start(); setTimeout(() => osc.stop(), 150);
+            } catch(e) {}
 
             if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
 
-            document.getElementById('pay-header').classList.add('hidden');
-            document.getElementById('waiting-area').classList.add('hidden');
-            document.getElementById('success-area').classList.remove('hidden');
-            document.body.classList.add('success-screen');
+            document.getElementById('print-btn').style.display = 'flex';
+            document.getElementById('success-content').style.opacity = '1';
+            navigate('success');
         }
 
+        // ========== TICKET ==========
         function startPrinting() {
-            // Preparar el ticket
             const list = document.getElementById('ticket-items');
             list.innerHTML = '';
             const counts = {};
-            cart.forEach(item => counts[item.name] = (counts[item.name] || 0) + 1);
-            
-            Object.keys(counts).forEach(name => {
-                const itemData = cart.find(i => i.name === name);
+            cart.forEach(item => {
+                if (!counts[item.name]) counts[item.name] = { price: item.price, qty: 0 };
+                counts[item.name].qty++;
+            });
+
+            Object.entries(counts).forEach(([name, data]) => {
                 const row = document.createElement('div');
-                row.className = 'flex justify-between uppercase';
-                row.innerHTML = `<span>${counts[name]}x ${name}</span><span>${(itemData.price * counts[name]).toFixed(2)}</span>`;
+                row.style.cssText = 'display:flex; justify-content:space-between; font-size:12px; padding:2px 0; text-transform:uppercase;';
+                row.innerHTML = `<span>${data.qty}x ${name}</span><span>${fmt(data.price * data.qty)}</span>`;
                 list.appendChild(row);
             });
 
             const now = new Date();
-            document.getElementById('ticket-date').innerText = `${now.toLocaleDateString()} ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            document.getElementById('ticket-total').innerText = total.toFixed(2).replace('.', ',') + '€';
-            
-            // Iniciar animación
-            document.getElementById('ticket-modal').classList.remove('hidden');
+            document.getElementById('ticket-date').innerText = `${now.toLocaleDateString('es-ES')} ${now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+            document.getElementById('ticket-trans').innerText = `TRANS: #${Math.floor(Math.random() * 99999).toString().padStart(5, '0')}`;
+            document.getElementById('ticket-total').innerText = fmt(totalOrder);
+            document.getElementById('ticket-method').innerText = 'PAGO: ' + paymentMethod;
+            document.getElementById('ticket-ref').innerText = paymentMethod === 'TARJETA' ? 'REF: **** **** **** ' + Math.floor(1000 + Math.random() * 9000) : '';
+
+            const modal = document.getElementById('ticket-modal');
+            modal.style.display = 'flex';
             const paper = document.getElementById('ticket-paper');
+            paper.classList.remove('printing-anim');
+            void paper.offsetWidth; // force reflow
             paper.classList.add('printing-anim');
-            
-            // Sonido de impresión simulado (vibración rítmica)
-            const printInterval = setInterval(() => {
-                if (navigator.vibrate) navigator.vibrate(20);
-            }, 100);
 
-            setTimeout(() => {
-                clearInterval(printInterval);
-            }, 2500);
+            const printInterval = setInterval(() => { if (navigator.vibrate) navigator.vibrate(20); }, 100);
+            setTimeout(() => clearInterval(printInterval), 2500);
 
-            document.getElementById('print-btn').classList.add('hidden');
-            document.getElementById('success-confirmation').classList.add('opacity-0');
+            document.getElementById('print-btn').style.display = 'none';
+            document.getElementById('success-content').style.opacity = '0.3';
         }
 
-        function closeTicket() {
-            resetCart();
-            cancelPay();
-            document.getElementById('print-btn').classList.remove('hidden');
-            document.getElementById('success-confirmation').classList.remove('opacity-0');
+        async function shareWhatsApp() {
+            const paper = document.getElementById('ticket-paper');
+            const btns = document.getElementById('ticket-btns');
+
+            // Ocultar botones antes de la captura
+            btns.style.display = 'none';
+
+            try {
+                const canvas = await html2canvas(paper, { backgroundColor: '#ffffff', scale: 2 });
+
+                // Restaurar botones
+                btns.style.display = 'flex';
+
+                canvas.toBlob(async (blob) => {
+                    const file = new File([blob], 'ticket-casa-adrian.png', { type: 'image/png' });
+
+                    // Intentar Web Share API (Android & iOS)
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                title: 'Ticket Casa Adrián',
+                                text: '🧾 ¡Mira mi ticket de compra!',
+                                files: [file]
+                            });
+                            return;
+                        } catch (e) { /* usuario canceló o error */ }
+                    }
+
+                    // Fallback: descargar la imagen
+                    const link = document.createElement('a');
+                    link.href = canvas.toDataURL('image/png');
+                    link.download = 'ticket-casa-adrian.png';
+                    link.click();
+                }, 'image/png');
+            } catch (e) {
+                btns.style.display = 'flex';
+                console.error('Error al capturar ticket:', e);
+            }
+        }
+
+        function hideTicket() {
+            document.getElementById('ticket-modal').style.display = 'none';
+            document.getElementById('ticket-paper').classList.remove('printing-anim');
+        }
+
+        function saveCurrentSale() {
+            if (cart.length === 0 || totalOrder <= 0) return;
+            
+            const transId = Math.floor(Math.random() * 99999).toString().padStart(5, '0');
+            const now = new Date();
+            const dateStr = `${now.toLocaleDateString('es-ES')} ${now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`;
+            
+            const sale = {
+                id: transId,
+                date: dateStr,
+                total: totalOrder,
+                method: paymentMethod,
+                items: [...cart]
+            };
+
+            let history = JSON.parse(localStorage.getItem('bankplay_tickets') || '[]');
+            history.unshift(sale); // Add to beginning
+            localStorage.setItem('bankplay_tickets', JSON.stringify(history));
+        }
+
+        function closeTicketAction() {
+            hideTicket();
+            if (isHistoricalView) {
+                cart = [...backupCart];
+                totalOrder = backupTotal;
+                paymentMethod = backupMethod;
+                isHistoricalView = false;
+            } else {
+                saveCurrentSale();
+                resetCart();
+                isPaid = false;
+                navigate('menu');
+            }
+        }
+
+        function openHistoricalTicket(id) {
+            let history = JSON.parse(localStorage.getItem('bankplay_tickets') || '[]');
+            let sale = history.find(s => s.id === id);
+            if(!sale) return;
+
+            isHistoricalView = true;
+            backupCart = [...cart];
+            backupTotal = totalOrder;
+            backupMethod = paymentMethod;
+
+            cart = sale.items || [];
+            totalOrder = sale.total || 0;
+            paymentMethod = sale.method || '';
+
+            startPrinting();
+
+            document.getElementById('ticket-date').innerText = sale.date;
+            document.getElementById('ticket-trans').innerText = `TRANS: #${sale.id}`;
+        }
+
+        function renderTicketsHistory() {
+            const list = document.getElementById('tickets-list');
+            list.innerHTML = '';
+            
+            let history = [];
+            try {
+                history = JSON.parse(localStorage.getItem('bankplay_tickets') || '[]');
+            } catch(e) {}
+
+            if (history.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align:center; padding:40px 20px; color:var(--text-muted);">
+                        <span class="material-icons-round" style="font-size:48px; opacity:0.5; margin-bottom:12px;">receipt</span>
+                        <p style="font-weight:800;">Aún no hay tickets.</p>
+                        <p style="font-size:12px; margin-top:4px;">¡Haz tu primera venta!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            history.forEach(sale => {
+                const card = document.createElement('div');
+                card.className = 'ticket-history-card';
+                card.onclick = () => openHistoricalTicket(sale.id);
+                card.innerHTML = `
+                    <div>
+                        <div class="date">${sale.date}</div>
+                        <div class="trans">Ticket #${sale.id}</div>
+                        <div class="method">${sale.method}</div>
+                    </div>
+                    <div class="total">${fmt(sale.total)}</div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function clearTicketsHistory() {
+            if (confirm('¿Seguro que quieres borrar todos los tickets?')) {
+                localStorage.removeItem('bankplay_tickets');
+                renderTicketsHistory();
+            }
         }
     </script>
 </body>
+
 </html>
