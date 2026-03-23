@@ -1,52 +1,429 @@
 [
-  { "id": 1, "name": "Hamburguesa", "price": 6.50, "icon": "🍔", "category": "Comida" },
-  { "id": 2, "name": "Paella", "price": 12.00, "icon": "🥘", "category": "Comida" },
-  { "id": 3, "name": "Gambas", "price": 9.50, "icon": "🦐", "category": "Comida" },
-  { "id": 4, "name": "Huevo Frito", "price": 4.50, "icon": "🍳", "category": "Comida" },
-  { "id": 5, "name": "Pescado", "price": 11.00, "icon": "🐟", "category": "Comida" },
-  { "id": 6, "name": "Pulpo", "price": 14.50, "icon": "🐙", "category": "Comida" },
-  { "id": 7, "name": "Chuletón", "price": 22.00, "icon": "🥩", "category": "Comida" },
-  { "id": 8, "name": "Pizza", "price": 8.50, "icon": "🍕", "category": "Comida" },
-  { "id": 9, "name": "Papas Fritas", "price": 3.00, "icon": "🍟", "category": "Comida" },
-  { "id": 10, "name": "Tortilla", "price": 5.00, "icon": "🫓", "category": "Comida" },
-  { "id": 11, "name": "Perritos", "price": 4.00, "icon": "🌭", "category": "Comida" },
-  { "id": 12, "name": "Nuggets", "price": 5.50, "icon": "🧽", "category": "Comida" },
-  { "id": 13, "name": "Camarones", "price": 10.00, "icon": "🍤", "category": "Comida" },
-  { "id": 14, "name": "Lapas", "price": 8.00, "icon": "🐚", "category": "Comida" },
-  { "id": 15, "name": "Ensalada", "price": 6.00, "icon": "🥗", "category": "Comida" },
-  { "id": 17, "name": "Arroz", "price": 7.50, "icon": "🍚", "category": "Comida" },
-  { "id": 18, "name": "Costillas con Papas", "price": 13.00, "icon": "🍖", "category": "Comida" },
-  { "id": 19, "name": "Muslitos de Pollo", "price": 6.50, "icon": "🍗", "category": "Comida" },
-  { "id": 20, "name": "Creps", "price": 5.00, "icon": "🥞", "category": "Comida" },
-  { "id": 21, "name": "Tacos", "price": 7.00, "icon": "🌮", "category": "Comida" },
-  { "id": 22, "name": "Sopa", "price": 4.50, "icon": "🍲", "category": "Comida" },
-  { "id": 23, "name": "Bocadillo", "price": 5.00, "icon": "🥖", "category": "Comida" },
-  { "id": 24, "name": "Sushi", "price": 12.50, "icon": "🍣", "category": "Comida" },
-  { "id": 25, "name": "Kebab", "price": 6.00, "icon": "🥙", "category": "Comida" },
-  { "id": 26, "name": "Refresco", "price": 2.20, "icon": "🥤", "category": "Bebidas" },
-  { "id": 27, "name": "Cerveza", "price": 2.50, "icon": "🍺", "category": "Bebidas" },
-  { "id": 28, "name": "Café", "price": 1.20, "icon": "☕", "category": "Bebidas" },
-  { "id": 29, "name": "Zumo", "price": 2.80, "icon": "🧃", "category": "Bebidas" },
-  { "id": 30, "name": "Agua", "price": 1.00, "icon": "💧", "category": "Bebidas" },
-  { "id": 31, "name": "Vino", "price": 3.50, "icon": "🍷", "category": "Bebidas" },
-  { "id": 32, "name": "Barraquito", "price": 2.50, "icon": "🥃", "category": "Bebidas" },
-  { "id": 33, "name": "Chocolate", "price": 2.00, "icon": "🍫", "category": "Bebidas" },
-  { "id": 34, "name": "Batido", "price": 3.00, "icon": "🥛", "category": "Bebidas" },
-  { "id": 35, "name": "Helado", "price": 3.50, "icon": "🍦", "category": "Postres" },
-  { "id": 36, "name": "Tarta", "price": 4.00, "icon": "🎂", "category": "Postres" },
-  { "id": 37, "name": "Flan", "price": 3.00, "icon": "🍮", "category": "Postres" },
-  { "id": 38, "name": "Galletas", "price": 2.50, "icon": "🍪", "category": "Postres" },
-  { "id": 39, "name": "Churros", "price": 3.50, "icon": "🥖", "category": "Postres" },
-  { "id": 40, "name": "Donuts", "price": 2.00, "icon": "🍩", "category": "Postres" },
-  { "id": 41, "name": "Caramelos", "price": 1.50, "icon": "🍬", "category": "Postres" },
-  { "id": 42, "name": "Manzana", "price": 1.00, "icon": "🍎", "category": "Frutas" },
-  { "id": 43, "name": "Plátano", "price": 0.80, "icon": "🍌", "category": "Frutas" },
-  { "id": 44, "name": "Naranja", "price": 1.00, "icon": "🍊", "category": "Frutas" },
-  { "id": 45, "name": "Fresa", "price": 2.00, "icon": "🍓", "category": "Frutas" },
-  { "id": 46, "name": "Sandía", "price": 2.50, "icon": "🍉", "category": "Frutas" },
-  { "id": 47, "name": "Uvas", "price": 1.50, "icon": "🍇", "category": "Frutas" },
-  { "id": 48, "name": "Piña", "price": 2.00, "icon": "🍍", "category": "Frutas" },
-  { "id": 49, "name": "Melocotón", "price": 1.50, "icon": "🍑", "category": "Frutas" },
-  { "id": 50, "name": "Cereza", "price": 2.50, "icon": "🍒", "category": "Frutas" },
-  { "id": 51, "name": "Kiwi", "price": 1.20, "icon": "🥝", "category": "Frutas" }
+  {
+    "id": 1,
+    "name": "Hamburguesa",
+    "price": 6.50,
+    "icon": "🍔",
+    "category": "Comida"
+  },
+  {
+    "id": 2,
+    "name": "Paella",
+    "price": 12.00,
+    "icon": "🥘",
+    "category": "Comida"
+  },
+  {
+    "id": 3,
+    "name": "Gambas",
+    "price": 9.50,
+    "icon": "🦐",
+    "category": "Comida"
+  },
+  {
+    "id": 4,
+    "name": "Huevo Frito",
+    "price": 4.50,
+    "icon": "🍳",
+    "category": "Comida"
+  },
+  {
+    "id": 5,
+    "name": "Pescado",
+    "price": 11.00,
+    "icon": "🐟",
+    "category": "Comida"
+  },
+  {
+    "id": 6,
+    "name": "Pulpo",
+    "price": 14.50,
+    "icon": "🐙",
+    "category": "Comida"
+  },
+  {
+    "id": 7,
+    "name": "Chuletón",
+    "price": 22.00,
+    "icon": "🥩",
+    "category": "Comida"
+  },
+  {
+    "id": 8,
+    "name": "Pizza",
+    "price": 8.50,
+    "icon": "🍕",
+    "category": "Comida"
+  },
+  {
+    "id": 9,
+    "name": "Papas Fritas",
+    "price": 3.00,
+    "icon": "🍟",
+    "category": "Comida"
+  },
+  {
+    "id": 10,
+    "name": "Tortilla",
+    "price": 5.00,
+    "icon": "🫓",
+    "category": "Comida"
+  },
+  {
+    "id": 11,
+    "name": "Perritos",
+    "price": 4.00,
+    "icon": "🌭",
+    "category": "Comida"
+  },
+  {
+    "id": 13,
+    "name": "Camarones",
+    "price": 10.00,
+    "icon": "🍤",
+    "category": "Comida"
+  },
+  {
+    "id": 14,
+    "name": "Lapas",
+    "price": 8.00,
+    "icon": "🐚",
+    "category": "Comida"
+  },
+  {
+    "id": 15,
+    "name": "Ensalada",
+    "price": 6.00,
+    "icon": "🥗",
+    "category": "Comida"
+  },
+  {
+    "id": 17,
+    "name": "Arroz",
+    "price": 7.50,
+    "icon": "🍚",
+    "category": "Comida"
+  },
+  {
+    "id": 18,
+    "name": "Costillas con Papas",
+    "price": 13.00,
+    "icon": "🍖",
+    "category": "Comida"
+  },
+  {
+    "id": 19,
+    "name": "Muslitos de Pollo",
+    "price": 6.50,
+    "icon": "🍗",
+    "category": "Comida"
+  },
+  {
+    "id": 20,
+    "name": "Creps",
+    "price": 5.00,
+    "icon": "🥞",
+    "category": "Comida"
+  },
+  {
+    "id": 21,
+    "name": "Tacos",
+    "price": 7.00,
+    "icon": "🌮",
+    "category": "Comida"
+  },
+  {
+    "id": 22,
+    "name": "Sopa",
+    "price": 4.50,
+    "icon": "🍲",
+    "category": "Comida"
+  },
+  {
+    "id": 23,
+    "name": "Bocadillo",
+    "price": 5.00,
+    "icon": "🥖",
+    "category": "Comida"
+  },
+  {
+    "id": 24,
+    "name": "Sushi",
+    "price": 12.50,
+    "icon": "🍣",
+    "category": "Comida"
+  },
+  {
+    "id": 25,
+    "name": "Kebab",
+    "price": 6.00,
+    "icon": "🥙",
+    "category": "Comida"
+  },
+  {
+    "id": 26,
+    "name": "Refresco",
+    "price": 2.20,
+    "icon": "🥤",
+    "category": "Bebidas"
+  },
+  {
+    "id": 27,
+    "name": "Cerveza",
+    "price": 2.50,
+    "icon": "🍺",
+    "category": "Bebidas"
+  },
+  {
+    "id": 28,
+    "name": "Café",
+    "price": 1.20,
+    "icon": "☕",
+    "category": "Bebidas"
+  },
+  {
+    "id": 29,
+    "name": "Zumo",
+    "price": 2.80,
+    "icon": "🧃",
+    "category": "Bebidas"
+  },
+  {
+    "id": 30,
+    "name": "Agua",
+    "price": 1.00,
+    "icon": "💧",
+    "category": "Bebidas"
+  },
+  {
+    "id": 31,
+    "name": "Vino",
+    "price": 3.50,
+    "icon": "🍷",
+    "category": "Bebidas"
+  },
+  {
+    "id": 32,
+    "name": "Barraquito",
+    "price": 2.50,
+    "icon": "🥃",
+    "category": "Bebidas"
+  },
+  {
+    "id": 33,
+    "name": "Chocolate",
+    "price": 2.00,
+    "icon": "🍫",
+    "category": "Postres"
+  },
+  {
+    "id": 34,
+    "name": "Batido",
+    "price": 3.00,
+    "icon": "🥛",
+    "category": "Bebidas"
+  },
+  {
+    "id": 35,
+    "name": "Helado",
+    "price": 3.50,
+    "icon": "🍦",
+    "category": "Postres"
+  },
+  {
+    "id": 36,
+    "name": "Tarta",
+    "price": 4.00,
+    "icon": "🎂",
+    "category": "Postres"
+  },
+  {
+    "id": 37,
+    "name": "Flan",
+    "price": 3.00,
+    "icon": "🍮",
+    "category": "Postres"
+  },
+  {
+    "id": 38,
+    "name": "Galletas",
+    "price": 2.50,
+    "icon": "🍪",
+    "category": "Postres"
+  },
+  {
+    "id": 39,
+    "name": "Churros",
+    "price": 3.50,
+    "icon": "🥨",
+    "category": "Postres"
+  },
+  {
+    "id": 40,
+    "name": "Donuts",
+    "price": 2.00,
+    "icon": "🍩",
+    "category": "Postres"
+  },
+  {
+    "id": 41,
+    "name": "Caramelos",
+    "price": 1.50,
+    "icon": "🍬",
+    "category": "Postres"
+  },
+  {
+    "id": 42,
+    "name": "Manzana",
+    "price": 1.00,
+    "icon": "🍎",
+    "category": "Frutas"
+  },
+  {
+    "id": 43,
+    "name": "Plátano",
+    "price": 0.80,
+    "icon": "🍌",
+    "category": "Frutas"
+  },
+  {
+    "id": 44,
+    "name": "Naranja",
+    "price": 1.00,
+    "icon": "🍊",
+    "category": "Frutas"
+  },
+  {
+    "id": 45,
+    "name": "Fresa",
+    "price": 2.00,
+    "icon": "🍓",
+    "category": "Frutas"
+  },
+  {
+    "id": 46,
+    "name": "Sandía",
+    "price": 2.50,
+    "icon": "🍉",
+    "category": "Frutas"
+  },
+  {
+    "id": 47,
+    "name": "Uvas",
+    "price": 1.50,
+    "icon": "🍇",
+    "category": "Frutas"
+  },
+  {
+    "id": 48,
+    "name": "Piña",
+    "price": 2.00,
+    "icon": "🍍",
+    "category": "Frutas"
+  },
+  {
+    "id": 49,
+    "name": "Melocotón",
+    "price": 1.50,
+    "icon": "🍑",
+    "category": "Frutas"
+  },
+  {
+    "id": 50,
+    "name": "Cereza",
+    "price": 2.50,
+    "icon": "🍒",
+    "category": "Frutas"
+  },
+  {
+    "id": 51,
+    "name": "Kiwi",
+    "price": 1.20,
+    "icon": "🥝",
+    "category": "Frutas"
+  },
+  {
+    "id": 52,
+    "name": "Croissant",
+    "price": 1.50,
+    "icon": "🥐",
+    "category": "Postres"
+  },
+  {
+    "id": 53,
+    "name": "Wrap",
+    "price": 4.50,
+    "icon": "🌯",
+    "category": "Comida"
+  },
+  {
+    "id": 54,
+    "name": "Sandwich",
+    "price": 3.50,
+    "icon": "🥪",
+    "category": "Comida"
+  },
+  {
+    "id": 55,
+    "name": "Palomitas",
+    "price": 2.50,
+    "icon": "🍿",
+    "category": "Comida"
+  },
+  {
+    "id": 56,
+    "name": "Croquetas",
+    "price": 4.00,
+    "icon": "🧆",
+    "category": "Comida"
+  },
+  {
+    "id": 57,
+    "name": "Pasta",
+    "price": 8.50,
+    "icon": "🍝",
+    "category": "Comida"
+  },
+  {
+    "id": 59,
+    "name": "Cocktail",
+    "price": 6.00,
+    "icon": "🍸",
+    "category": "Bebidas"
+  },
+  {
+    "id": 60,
+    "name": "Queso",
+    "price": 3.50,
+    "icon": "🧀",
+    "category": "Comida"
+  },
+  {
+    "id": 61,
+    "name": "Baicon",
+    "price": 2.00,
+    "icon": "🥓",
+    "category": "Comida"
+  },
+  {
+    "id": 62,
+    "name": "Aceitunas",
+    "price": 1.50,
+    "icon": "🫒",
+    "category": "Comida"
+  },
+  {
+    "id": 63,
+    "name": "Manices",
+    "price": 1.50,
+    "icon": "🥜",
+    "category": "Comida"
+  },
+  {
+    "id": 64,
+    "name": "Melón",
+    "price": 2.50,
+    "icon": "🍈",
+    "category": "Frutas"
+  }
 ]
