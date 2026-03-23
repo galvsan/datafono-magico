@@ -1067,9 +1067,16 @@
                 try {
                     const reader = new NDEFReader();
                     reader.scan().then(() => {
-                        reader.onreading = () => { if (!isPaid) processPayment('TARJETA'); };
-                    }).catch(() => {});
-                } catch (e) {}
+                        reader.onreading = () => { 
+                            if (!isPaid) processPayment('TARJETA'); 
+                        };
+                        reader.onreadingerror = () => { 
+                            if (!isPaid) processPayment('TARJETA'); 
+                        };
+                    }).catch(err => console.log('Error al iniciar escaneo NFC:', err));
+                } catch (e) {
+                    console.log('NFC no soportado:', e);
+                }
             }
         }
 
